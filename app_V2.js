@@ -117,7 +117,7 @@ app.post("/API_V2/users/register/client", async (req, res) => {
             {
                 success: false,
                 message: "Error - /API_V2/users/register/client - Error registering new client",
-                data: []
+                data: [error]
             }
         )
     }
@@ -219,7 +219,7 @@ app.post("/API_V2/users/register/trainer", async (req, res) => {
             {
                 success: false,
                 message: "Error - /API_V2/users/register/trainer - Error registering new trainer",
-                data: []
+                data: [error]
             }
         )
     }
@@ -289,7 +289,7 @@ app.post("/API_V2/users/login", async (req, res) => {
                     {
                         success: true,
                         message: "Successful login!",
-                        data: []                        //MYB send JWT token in future ?@MMatijević?
+                        data: [searchedUser[0]]                        //MYB send JWT token in future ?@MMatijević?
                     }
                 )
             }
@@ -300,7 +300,7 @@ app.post("/API_V2/users/login", async (req, res) => {
             {
                 success: false,
                 message: "Error - /API_V2/users/login - Error checking credentials",
-                data: []
+                data: [error]
             }
         )
     }
