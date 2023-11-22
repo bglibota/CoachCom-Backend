@@ -157,7 +157,7 @@ export async function createANewTrainer(
 export async function checkUsernameForLogin(insertedUsername) {
     const [queryResult] = await pool.query(
         `
-        SELECT username, password, salt, raw_password
+        SELECT *
         FROM users
         WHERE username = ?
         LIMIT 1
