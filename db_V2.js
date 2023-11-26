@@ -167,6 +167,33 @@ export async function checkUsernameForLogin(insertedUsername) {
 
     return queryResult
 }
+
+export async function checkUserRole(insertedUsername) {
+    const [queryResult] = await pool.query(
+        `
+        SELECT user_type_id
+        FROM users
+        WHERE username = ?
+        LIMIT 1
+        `,
+        [insertedUsername]
+    );
+
+    const userTypeId = queryResult[0].user_type_id
+
+    const [queryResult1] = await pool.query(
+        `
+        SELECT name
+        FROM user_types
+        WHERE user_type_id = ?
+        LIMIT 1
+        `,
+        [userTypeId]
+    );
+
+    return queryResult1
+}
+
 // console.log(await checkUsernameForLogin("nherci", "niki123"))
 
 //--------------------------------------------------------------------------------------

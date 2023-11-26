@@ -11,7 +11,8 @@ import {
     getASpecificUser,
     createANewClient,
     createANewTrainer,
-    checkUsernameForLogin
+    checkUsernameForLogin,
+    checkUserRole
 } from './db_V2.js';
 
 
@@ -261,7 +262,7 @@ app.post("/API_V2/users/login", async (req, res) => {
         } = req.body;
 
         const searchedUser = await checkUsernameForLogin(insertedUsername)
-
+        
         if (searchedUser[0] == null) {       //queryResult[0]
             res.status(404).json(
                 {
@@ -285,11 +286,13 @@ app.post("/API_V2/users/login", async (req, res) => {
                 )
             } else {
                 //######### TO DO - set number_of_login_attempts to 0 AND set last_login_time
+                const userRole = await checkUserRole(insertedUsername)
+                const roleName = userRole[0].name
                 res.status(200).json(
                     {
                         success: true,
                         message: "Successful login!",
-                        data: [searchedUser[0]]                        //MYB send JWT token in future ?@MMatijević?
+                        data: roleName                        //MYB send JWT token in future ?@MMatijević?
                     }
                 )
             }
