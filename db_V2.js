@@ -155,6 +155,7 @@ export async function createANewTrainer(
 //--------------------------------------------------------------------------------------
 
 export async function checkUsernameForLogin(insertedUsername) {
+    
     const [queryResult] = await pool.query(
         `
         SELECT *

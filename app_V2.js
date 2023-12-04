@@ -309,6 +309,35 @@ app.post("/API_V2/users/login", async (req, res) => {
     }
 });
 
+app.get("/API_V2/users/user", async (req, res) => {
+
+    try {
+
+        const {username} = req.query;
+        
+        const user = await checkUsernameForLogin(username)
+  
+        res.status(200).json(
+            {
+                success: true,
+                message: "Successful retrieval of user data",
+                data: user[0]                      
+            }
+        )  
+        
+
+    } catch (error) {
+        res.status(500).json(
+            {
+                success: false,
+                message: "Error - /API_V2/users/user - Error checking credentials",
+                data: [error]
+            }
+        )
+    }
+});
+
+
 //--------------------------------------------------------------------------------------
 //-- RESTful API -- Login -- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //--------------------------------------------------------------------------------------
