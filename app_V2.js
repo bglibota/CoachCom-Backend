@@ -12,7 +12,9 @@ import {
     createANewClient,
     createANewTrainer,
     checkUsernameForLogin,
-    checkUserRole
+    checkUserRole,
+    getUserData,
+    getUserMeasurements
 } from './db_V2.js';
 
 
@@ -287,12 +289,16 @@ app.post("/API_V2/users/login", async (req, res) => {
             } else {
                 //######### TO DO - set number_of_login_attempts to 0 AND set last_login_time
                 const userRole = await checkUserRole(insertedUsername)
+                const user_id = searchedUser[0].user_id
                 const roleName = userRole[0].name
                 res.status(200).json(
                     {
                         success: true,
                         message: "Successful login!",
-                        data: roleName                        //MYB send JWT token in future ?@MMatijević?
+                        data:  {
+                            user_id: user_id,
+                            role: roleName
+                        }                      //MYB send JWT token in future ?@MMatijević?
                     }
                 )
             }
@@ -313,9 +319,9 @@ app.get("/API_V2/users/user", async (req, res) => {
 
     try {
 
-        const {username} = req.query;
+        const {user_id} = req.query;
         
-        const user = await checkUsernameForLogin(username)
+        const user = await getUserData(user_id)
   
         res.status(200).json(
             {
@@ -337,6 +343,33 @@ app.get("/API_V2/users/user", async (req, res) => {
     }
 });
 
+app.get("/API_V2/users/user/measurements", async (req, res) => {
+
+    try {
+
+        const {user_id} = req.query;
+        
+        const measurements = await getUserMeasurements(user_id)
+  
+        res.status(200).json(
+            {
+                success: true,
+                message: "Successful retrieval of measurements data",
+                data: measurements                      
+            }
+        )  
+        
+
+    } catch (error) {
+        res.status(500).json(
+            {
+                success: false,
+                message: "Error - /API_V2/users/user - Error checking credentials",
+                data: [error]
+            }
+        )
+    }
+});
 
 //--------------------------------------------------------------------------------------
 //-- RESTful API -- Login -- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

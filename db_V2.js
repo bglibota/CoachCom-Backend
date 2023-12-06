@@ -195,6 +195,35 @@ export async function checkUserRole(insertedUsername) {
     return queryResult1
 }
 
+export async function getUserData(user_id) {
+    
+    const [queryResult] = await pool.query(
+        `
+        SELECT *
+        FROM users
+        WHERE user_id = ?
+        LIMIT 1
+        `,
+        [user_id]
+    );
+
+    return queryResult
+}
+
+export async function getUserMeasurements(user_id) {
+    
+    const [queryResult] = await pool.query(
+        `
+        SELECT *
+        FROM physical_measurements
+        WHERE user_id = ?
+        `,
+        [user_id]
+    );
+
+    return queryResult
+}
+
 // console.log(await checkUsernameForLogin("nherci", "niki123"))
 
 //--------------------------------------------------------------------------------------
