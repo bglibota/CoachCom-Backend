@@ -172,27 +172,17 @@ export async function checkUsernameForLogin(insertedUsername) {
 export async function checkUserRole(insertedUsername) {
     const [queryResult] = await pool.query(
         `
-        SELECT user_type_id
+        SELECT user_types.name
         FROM users
-        WHERE username = ?
+        JOIN user_types ON users.user_type_id = user_types.user_type_id
+        WHERE users.username = ?
         LIMIT 1
         `,
         [insertedUsername]
     );
+   
 
-    const userTypeId = queryResult[0].user_type_id
-
-    const [queryResult1] = await pool.query(
-        `
-        SELECT name
-        FROM user_types
-        WHERE user_type_id = ?
-        LIMIT 1
-        `,
-        [userTypeId]
-    );
-
-    return queryResult1
+    return queryResult
 }
 
 export async function getUserData(user_id) {
@@ -216,6 +206,20 @@ export async function getUserMeasurements(user_id) {
         `
         SELECT *
         FROM physical_measurements
+        WHERE user_id = ?
+        `,
+        [user_id]
+    );
+
+    return queryResult
+}
+
+export async function getTargetUserMeasurements(user_id) {
+    
+    const [queryResult] = await pool.query(
+        `
+        SELECT *
+        FROM target_measurements
         WHERE user_id = ?
         `,
         [user_id]

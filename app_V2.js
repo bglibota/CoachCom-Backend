@@ -14,7 +14,8 @@ import {
     checkUsernameForLogin,
     checkUserRole,
     getUserData,
-    getUserMeasurements
+    getUserMeasurements,
+    getTargetUserMeasurements
 } from './db_V2.js';
 
 
@@ -350,12 +351,16 @@ app.get("/API_V2/users/user/measurements", async (req, res) => {
         const {user_id} = req.query;
         
         const measurements = await getUserMeasurements(user_id)
+        const target_measurements = await getTargetUserMeasurements(user_id)
   
         res.status(200).json(
             {
                 success: true,
                 message: "Successful retrieval of measurements data",
-                data: measurements                      
+                data: {
+                    target_measurements: target_measurements,
+                    measurements: measurements
+                  }                    
             }
         )  
         
