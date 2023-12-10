@@ -359,7 +359,7 @@ app.get("/API_V2/users/user/measurements", async (req, res) => {
                 message: "Successful retrieval of measurements data",
                 data: {
                     target_measurements: target_measurements,
-                    measurements: measurements
+                    physical_measurements: measurements
                   }                    
             }
         )  
