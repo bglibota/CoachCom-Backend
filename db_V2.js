@@ -284,5 +284,41 @@ export async function getSpecificPerosnalizedProgramData(personalized_program_id
 }
 
 //--------------------------------------------------------------------------------------
+
+export async function createANewCustomizedDay(
+    personalized_program_id, notes
+) {
+    const queryResult = await pool.query(
+        `
+        INSERT INTO customized_days 
+        (personalized_program_id, notes)
+        VALUES 
+        (?, ?)
+        `,
+        [
+            personalized_program_id, notes
+        ]
+    );
+
+    const newCustomizedDayId = queryResult[0].insertId
+
+    return getSpecificCustomizedDayData(newCustomizedDayId)
+}
+
+export async function getSpecificCustomizedDayData(customized_day_id) {
+    const [queryResult] = await pool.query(
+        `
+        SELECT *
+        FROM customized_days
+        WHERE customized_day_id = ?
+        `,
+        [
+            customized_day_id
+        ]
+    );
+
+    return queryResult[0]
+}
+//--------------------------------------------------------------------------------------
 //-- RESTful API -- Personalized training programs -- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //--------------------------------------------------------------------------------------

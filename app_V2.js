@@ -17,7 +17,9 @@ import {
     getUserMeasurements,
     getTargetUserMeasurements,
     createANewPersonalizedProgram,
-    getSpecificPerosnalizedProgramData
+    getSpecificPerosnalizedProgramData,
+    createANewCustomizedDay,
+    getSpecificCustomizedDayData
 } from './db_V2.js';
 
 
@@ -449,7 +451,7 @@ app.post("/API_V2/personalized_program", async (req, res) => {
         res.status(500).json(
             {
                 success: false,
-                message: "Error - /API_V2/personalized_program - Error creating personalized programs",
+                message: "Error - /API_V2/personalized_program - Error creating personalized program",
                 data: [error]
             }
         )
@@ -467,7 +469,7 @@ app.get("/API_V2/personalized_program", async (req, res) => {
         res.status(200).json(
             {
                 success: true,
-                message: "Successful retrieval of user data",
+                message: "Successful retrieval of specific personalized program data",
                 data: [personalizedProgramData]
             }
         )
@@ -476,7 +478,85 @@ app.get("/API_V2/personalized_program", async (req, res) => {
         res.status(500).json(
             {
                 success: false,
-                message: "Error - /API_V2/personalized_program - Error creating personalized programs",
+                message: "Error - /API_V2/personalized_program - Error getting data for a specific personalized programs",
+                data: [error]
+            }
+        )
+    }
+});
+
+//-------------------------------------------------------------------------------------
+
+app.post("/API_V2/customized_days", async (req, res) => {
+    try {
+
+        const expectedJSONObjectElements = [
+            "personalized_program_id",
+            "notes"
+        ];
+
+        // Checks if all expected object elements are present in body of the request
+        const hasAllExpectedObjectElements = expectedJSONObjectElements.every(field => field in req.body);
+
+        if (!hasAllExpectedObjectElements) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid request body. Missing or unexpected object elements!',
+                data: []
+            });
+        }
+
+        const {
+            personalized_program_id,
+            notes
+        } = req.body;
+
+        const newCustomizedDay = await createANewCustomizedDay(
+            personalized_program_id,
+            notes
+        )
+
+        res.status(201).json(
+            {
+                success: true,
+                message: "New customized day created (customized_day_id = " + newCustomizedDay.customized_day_id + ")",
+                data: [newCustomizedDay]
+            }
+        )
+
+    } catch (error) {
+        res.status(500).json(
+            {
+                success: false,
+                message: "Error - /API_V2/customized_days - Error creating customized day",
+                data: [error]
+            }
+        )
+    }
+
+});
+
+app.get("/API_V2/customized_days", async (req, res) => {
+
+    try {
+
+        const { customized_day_id } = req.query;
+
+        const customizedDayData = await getSpecificCustomizedDayData(customized_day_id)
+
+        res.status(200).json(
+            {
+                success: true,
+                message: "Successful retrieval of specific customized day data",
+                data: [customizedDayData]
+            }
+        )
+
+    } catch (error) {
+        res.status(500).json(
+            {
+                success: false,
+                message: "Error - /API_V2/customized_days - Error getting data for a specific customized day",
                 data: [error]
             }
         )
