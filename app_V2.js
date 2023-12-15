@@ -20,7 +20,11 @@ import {
     createANewExercise,
     getSpecificExerciseData,
     updateExercise,
-    deleteExercise
+    deleteExercise,
+    createANewPersonalizedProgram,
+    getSpecificPerosnalizedProgramData,
+    createANewCustomizedDay,
+    getSpecificCustomizedDayData
 } from './db_V2.js';
 
 
@@ -50,8 +54,8 @@ app.post("/API_V2/users/register/client", async (req, res) => {
             "place_of_residence",
             "sex",
             "biography",
-            "profile_picture_path",
-            "biography_video_path"
+            "picture",
+            "video"
         ];
 
         // Checks if all expected object elements are present in body of the request
@@ -76,8 +80,8 @@ app.post("/API_V2/users/register/client", async (req, res) => {
             place_of_residence,
             sex,
             biography,
-            profile_picture_path,
-            biography_video_path
+            picture,
+            video
         } = req.body;
 
         //##### - TO DO - Server side data filtering (against SQL I and XSS attacks) (@MMatijević?)
@@ -107,8 +111,8 @@ app.post("/API_V2/users/register/client", async (req, res) => {
                 place_of_residence,
                 sex,
                 biography,
-                profile_picture_path,
-                biography_video_path,
+                picture,
+                video,
                 password
             )
 
@@ -149,9 +153,9 @@ app.post("/API_V2/users/register/trainer", async (req, res) => {
             "place_of_residence",
             "sex",
             "biography",
-            "profile_picture_path",
+            "picture",
             "documentation_directory_path",
-            "biography_video_path"
+            "video"
         ];
 
         // Checks if all expected object elements are present in body of the request
@@ -176,9 +180,9 @@ app.post("/API_V2/users/register/trainer", async (req, res) => {
             place_of_residence,
             sex,
             biography,
-            profile_picture_path,
+            picture,
             documentation_directory_path,
-            biography_video_path
+            video
         } = req.body;
 
         //##### - TO DO - Server side data filtering (against SQL I and XSS attacks) (@MMatijević?)
@@ -208,9 +212,9 @@ app.post("/API_V2/users/register/trainer", async (req, res) => {
                 place_of_residence,
                 sex,
                 biography,
-                profile_picture_path,
+                picture,
                 documentation_directory_path,
-                biography_video_path,
+                video,
                 password
             )
 
@@ -270,7 +274,7 @@ app.post("/API_V2/users/login", async (req, res) => {
         } = req.body;
 
         const searchedUser = await checkUsernameForLogin(insertedUsername)
-        
+
         if (searchedUser[0] == null) {       //queryResult[0]
             res.status(404).json(
                 {
@@ -301,7 +305,7 @@ app.post("/API_V2/users/login", async (req, res) => {
                     {
                         success: true,
                         message: "Successful login!",
-                        data:  {
+                        data: {
                             user_id: user_id,
                             role: roleName
                         }                      //MYB send JWT token in future ?@MMatijević?
@@ -314,72 +318,14 @@ app.post("/API_V2/users/login", async (req, res) => {
         res.status(500).json(
             {
                 success: false,
-                message: "Error - /API_V2/users/login - Error checking credentials",
+                message: "Error - /API_V2/users/login - Error checking credentials (user login)",
                 data: [error]
             }
         )
     }
 });
 
-app.get("/API_V2/users/user", async (req, res) => {
 
-    try {
-
-        const {user_id} = req.query;
-        
-        const user = await getUserData(user_id)
-  
-        res.status(200).json(
-            {
-                success: true,
-                message: "Successful retrieval of user data",
-                data: user[0]                      
-            }
-        )  
-        
-
-    } catch (error) {
-        res.status(500).json(
-            {
-                success: false,
-                message: "Error - /API_V2/users/user - Error checking credentials",
-                data: [error]
-            }
-        )
-    }
-});
-
-app.get("/API_V2/users/user/measurements", async (req, res) => {
-
-    try {
-
-        const {user_id} = req.query;
-        
-        const measurements = await getUserMeasurements(user_id)
-        const target_measurements = await getTargetUserMeasurements(user_id)
-  
-        res.status(200).json(
-            {
-                success: true,
-                message: "Successful retrieval of measurements data",
-                data: {
-                    target_measurements: target_measurements,
-                    physical_measurements: measurements
-                  }                    
-            }
-        )  
-        
-
-    } catch (error) {
-        res.status(500).json(
-            {
-                success: false,
-                message: "Error - /API_V2/users/user - Error checking credentials",
-                data: [error]
-            }
-        )
-    }
-});
 
 //--------------------------------------------------------------------------------------
 //-- RESTful API -- Login -- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -445,15 +391,15 @@ app.post("/API_V2/exercises/create", async (req, res) => {
         } else {
 
             const newExercise = await createANewExercise(
-            user_id,
-            name,
-            description,
-            category,
-            difficulty_level,
-            video_guide_url,
-            step_by_step_instructions,
-            muscle_group,
-            secondary_muscle_group
+                user_id,
+                name,
+                description,
+                category,
+                difficulty_level,
+                video_guide_url,
+                step_by_step_instructions,
+                muscle_group,
+                secondary_muscle_group
             )
 
             res.status(201).json(
@@ -480,18 +426,18 @@ app.get("/API_V2/exercises/read", async (req, res) => {
 
     try {
 
-        const {exercise_id} = req.query;
-        
+        const { exercise_id } = req.query;
+
         const exerciseData = await getSpecificExerciseData(exercise_id)
-  
+
         res.status(200).json(
             {
                 success: true,
                 message: "Successful retrieval of exercise data",
-                data: [exerciseData]                 
+                data: [exerciseData]
             }
-        )  
-        
+        )
+
 
     } catch (error) {
         res.status(500).json(
@@ -551,6 +497,7 @@ app.put("/API_V2/exercises/update", async (req, res) => {
             });
         }
 
+        //This is useless? - the object is being constructed but not used 
         const {
             user_id,
             name,
@@ -562,6 +509,8 @@ app.put("/API_V2/exercises/update", async (req, res) => {
             muscle_group,
             secondary_muscle_group
         } = req.body;
+
+
         // Update exercise data
         const updatedExercise = await updateExercise(exercise_id, req.body);
 
@@ -631,6 +580,283 @@ app.delete("/API_V2/exercises/delete", async (req, res) => {
 
 
 
+//--------------------------------------------------------------------------------------
+//-- RESTful API -- Personalized training programs -- ##################################
+//--------------------------------------------------------------------------------------
+
+app.post("/API_V2/personalized_program", async (req, res) => {
+
+    try {
+
+        const expectedJSONObjectElements = [
+            "trainer_id",
+            "client_id",
+            "beginning_date",
+            "end_date",
+            "overall_objective",
+            "additional_information"
+        ];
+
+        // Checks if all expected object elements are present in body of the request
+        const hasAllExpectedObjectElements = expectedJSONObjectElements.every(field => field in req.body);
+
+        if (!hasAllExpectedObjectElements) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid request body. Missing or unexpected object elements!',
+                data: []
+            });
+        }
+
+        const {
+            trainer_id,
+            client_id,
+            beginning_date,
+            end_date,
+            overall_objective,
+            additional_information
+        } = req.body;
+
+        const newPersonalizedProgram = await createANewPersonalizedProgram(
+            trainer_id,
+            client_id,
+            beginning_date,
+            end_date,
+            overall_objective,
+            additional_information
+        )
+
+        res.status(201).json(
+            {
+                success: true,
+                message: "New personalized program successfuly created by trainer (user_id = " + trainer_id + ") for client (user_id = " + client_id + ")",
+                data: [newPersonalizedProgram]
+            }
+        )
+
+    } catch (error) {
+        res.status(500).json(
+            {
+                success: false,
+                message: "Error - /API_V2/personalized_program - Error creating personalized program",
+                data: [error]
+            }
+        )
+    }
+});
+
+app.get("/API_V2/personalized_program", async (req, res) => {
+
+    try {
+
+        const { personalized_program_id } = req.query;
+
+        const personalizedProgramData = await getSpecificPerosnalizedProgramData(personalized_program_id)
+
+        if (personalizedProgramData == null) //personalized program wih the given id doesn't exists on DB
+        {
+            res.status(404).json(
+                {
+                    success: false,
+                    message: "Personalized program wih the given id doesn't exist!",
+                    data: [personalizedProgramData]
+                }
+            )
+        } else {
+            res.status(200).json(
+                {
+                    success: true,
+                    message: "Successful retrieval of specific personalized program data",
+                    data: [personalizedProgramData]
+                }
+            )
+        }
+
+
+    } catch (error) {
+        res.status(500).json(
+            {
+                success: false,
+                message: "Error - /API_V2/personalized_program - Error getting data for a specific personalized programs",
+                data: [error]
+            }
+        )
+    }
+});
+
+//-------------------------------------------------------------------------------------
+
+app.post("/API_V2/customized_days", async (req, res) => {
+    try {
+
+        const expectedJSONObjectElements = [
+            "personalized_program_id",
+            "notes"
+        ];
+
+        // Checks if all expected object elements are present in body of the request
+        const hasAllExpectedObjectElements = expectedJSONObjectElements.every(field => field in req.body);
+
+        if (!hasAllExpectedObjectElements) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid request body. Missing or unexpected object elements!',
+                data: []
+            });
+        }
+
+        //###TO DO - Check if given personalized_programs_id exists
+
+        const {
+            personalized_program_id,
+            notes
+        } = req.body;
+
+        const newCustomizedDay = await createANewCustomizedDay(
+            personalized_program_id,
+            notes
+        )
+
+        res.status(201).json(
+            {
+                success: true,
+                message: "New customized day created (customized_day_id = " + newCustomizedDay.customized_day_id + ")",
+                data: [newCustomizedDay]
+            }
+        )
+
+    } catch (error) {
+        res.status(500).json(
+            {
+                success: false,
+                message: "Error - /API_V2/customized_days - Error creating customized day",
+                data: [error]
+            }
+        )
+    }
+
+});
+
+app.get("/API_V2/customized_days", async (req, res) => {
+
+    try {
+
+        const { customized_day_id } = req.query;
+
+        const customizedDayData = await getSpecificCustomizedDayData(customized_day_id)
+
+        if (customizedDayData == null) //personalized program wih the given id doesn't exists on DB
+        {
+            res.status(404).json(
+                {
+                    success: false,
+                    message: "Customized day wih the given id doesn't exist!",
+                    data: [customizedDayData]
+                }
+            )
+        } else {
+            res.status(200).json(
+                {
+                    success: true,
+                    message: "Successful retrieval of specific customized day data",
+                    data: [customizedDayData]
+                }
+            )
+        }
+
+
+    } catch (error) {
+        res.status(500).json(
+            {
+                success: false,
+                message: "Error - /API_V2/customized_days - Error getting data for a specific customized day",
+                data: [error]
+            }
+        )
+    }
+});
+
+//--------------------------------------------------------------------------------------
+//-- RESTful API -- Personalized training programs -- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//--------------------------------------------------------------------------------------
+
+
+
+//--------------------------------------------------------------------------------------
+//-- RESTful API -- NOT SORTED IMPLEMENTATIONS -- ######################################
+//--------------------------------------------------------------------------------------
+
+//Implemented by R.Gladoic
+app.get("/API_V2/users/user", async (req, res) => {
+
+    try {
+
+        const { user_id } = req.query;
+
+        const user = await getUserData(user_id)
+
+        res.status(200).json(
+            {
+                success: true,
+                message: "Successful retrieval of user data",
+                data: user[0]
+            }
+        )
+
+
+    } catch (error) {
+        res.status(500).json(
+            {
+                success: false,
+                message: "Error - /API_V2/users/user - Error retrieving user data",
+                data: [error]
+            }
+        )
+    }
+});
+
+//Implemented by R.Gladoic
+app.get("/API_V2/users/user/measurements", async (req, res) => {
+
+    try {
+
+        const { user_id } = req.query;
+
+        const measurements = await getUserMeasurements(user_id)
+        const target_measurements = await getTargetUserMeasurements(user_id)
+
+        res.status(200).json(
+            {
+                success: true,
+                message: "Successful retrieval of measurements data",
+                data: {
+                    target_measurements: target_measurements,
+                    physical_measurements: measurements
+                }
+            }
+        )
+
+
+    } catch (error) {
+        res.status(500).json(
+            {
+                success: false,
+                message: "Error - /API_V2/users/user/measurements - Not Defined by the creator*",
+                data: [error]
+            }
+        )
+    }
+});
+
+//--------------------------------------------------------------------------------------
+//-- RESTful API -- NOT SORTED IMPLEMENTATIONS -- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//--------------------------------------------------------------------------------------
+
+
+//--------------------------------------------------------------------------------------
+//-- RESTful API -- Error handling and server listening -- #############################
+//--------------------------------------------------------------------------------------
+
 //Error handling...
 app.use((err, req, res, next) => {
     console.error(err.stack)
@@ -642,3 +868,17 @@ const port = process.env.PORT || 3000;
 app.listen(port, () => {
     console.log(`Server is running and listening on port ${port} ...`)
 });
+
+//--------------------------------------------------------------------------------------
+//-- RESTful API -- Error handling and server listening -- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//--------------------------------------------------------------------------------------
+
+
+
+//--------------------------------------------------------------------------------------
+//-- RESTful API -- Implementation part -- #############################################
+//--------------------------------------------------------------------------------------
+
+//--------------------------------------------------------------------------------------
+//-- RESTful API -- Implementation part -- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//--------------------------------------------------------------------------------------
