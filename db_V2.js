@@ -51,8 +51,8 @@ export async function getASpecificUser(userId) {
 
 export async function createANewClient(
     userName, safePassword, salt, firstName, lastName, eMail, dateOfBirth, phoneNumber, placeOfResidence, sex, biography,
-    profilePicturePath,
-    biographyVideoPath, rawPassword
+    profilePicture,
+    biographyVideo, rawPassword
 ) {
     const userTypeId = 2;
     const activationCode = generateRandomString(8);
@@ -78,16 +78,16 @@ export async function createANewClient(
         INSERT INTO users 
         (
             username, password, salt, first_name, last_name, e_mail, date_of_birth, phone_number, place_of_residence, sex, biography, 
-            registration_date, last_login_time, number_of_login_attempts, activation_code, profile_picture_path, 
-            profile_status, biography_video_path, user_type_id, raw_password
+            registration_date, last_login_time, number_of_login_attempts, activation_code, picture, 
+            profile_status, video, user_type_id, raw_password
         )
         VALUES 
         (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `,
         [
             userName, safePassword, salt, firstName, lastName, eMail, dateOfBirth, phoneNumber, placeOfResidence, sex, biography,
-            registrationDate, lastLoginTime, numberOfLoginAttempts, activationCode, profilePicturePath,
-            profileStatus, biographyVideoPath, userTypeId, rawPassword
+            registrationDate, lastLoginTime, numberOfLoginAttempts, activationCode, profilePicture,
+            profileStatus, biographyVideo, userTypeId, rawPassword
         ]
     );
 
@@ -98,8 +98,8 @@ export async function createANewClient(
 
 export async function createANewTrainer(
     userName, safePassword, salt, firstName, lastName, eMail, dateOfBirth, phoneNumber, placeOfResidence, sex, biography,
-    profilePicturePath, documentationDirectoryPath,
-    biographyVideoPath, rawPassword
+    profilePicture, documentationDirectoryPath,
+    biographyVideo, rawPassword
 ) {
     const userTypeId = 1;
     const activationCode = generateRandomString(8);
@@ -124,15 +124,15 @@ export async function createANewTrainer(
         `
         INSERT INTO users 
         (username, password, salt, first_name, last_name, e_mail, date_of_birth, phone_number, place_of_residence, sex, biography, 
-            registration_date, last_login_time, number_of_login_attempts, activation_code, profile_picture_path, documentation_directory_path, 
-            profile_status, biography_video_path, user_type_id, raw_password)
+            registration_date, last_login_time, number_of_login_attempts, activation_code, picture, documentation_directory_path, 
+            profile_status, video, user_type_id, raw_password)
         VALUES 
         (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `,
         [
             userName, safePassword, salt, firstName, lastName, eMail, dateOfBirth, phoneNumber, placeOfResidence, sex, biography,
-            registrationDate, lastLoginTime, numberOfLoginAttempts, activationCode, profilePicturePath, documentationDirectoryPath,
-            profileStatus, biographyVideoPath, userTypeId, rawPassword
+            registrationDate, lastLoginTime, numberOfLoginAttempts, activationCode, profilePicture, documentationDirectoryPath,
+            profileStatus, biographyVideo, userTypeId, rawPassword
         ]
     );
 

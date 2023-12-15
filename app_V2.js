@@ -43,8 +43,8 @@ app.post("/API_V2/users/register/client", async (req, res) => {
             "place_of_residence",
             "sex",
             "biography",
-            "profile_picture_path",
-            "biography_video_path"
+            "picture",
+            "video"
         ];
 
         // Checks if all expected object elements are present in body of the request
@@ -69,8 +69,8 @@ app.post("/API_V2/users/register/client", async (req, res) => {
             place_of_residence,
             sex,
             biography,
-            profile_picture_path,
-            biography_video_path
+            picture,
+            video
         } = req.body;
 
         //##### - TO DO - Server side data filtering (against SQL I and XSS attacks) (@MMatijević?)
@@ -100,8 +100,8 @@ app.post("/API_V2/users/register/client", async (req, res) => {
                 place_of_residence,
                 sex,
                 biography,
-                profile_picture_path,
-                biography_video_path,
+                picture,
+                video,
                 password
             )
 
@@ -142,9 +142,9 @@ app.post("/API_V2/users/register/trainer", async (req, res) => {
             "place_of_residence",
             "sex",
             "biography",
-            "profile_picture_path",
+            "picture",
             "documentation_directory_path",
-            "biography_video_path"
+            "video"
         ];
 
         // Checks if all expected object elements are present in body of the request
@@ -169,9 +169,9 @@ app.post("/API_V2/users/register/trainer", async (req, res) => {
             place_of_residence,
             sex,
             biography,
-            profile_picture_path,
+            picture,
             documentation_directory_path,
-            biography_video_path
+            video
         } = req.body;
 
         //##### - TO DO - Server side data filtering (against SQL I and XSS attacks) (@MMatijević?)
@@ -201,9 +201,9 @@ app.post("/API_V2/users/register/trainer", async (req, res) => {
                 place_of_residence,
                 sex,
                 biography,
-                profile_picture_path,
+                picture,
                 documentation_directory_path,
-                biography_video_path,
+                video,
                 password
             )
 
