@@ -11,6 +11,7 @@ const pool = mysql.createPool({
 }).promise()
 
 import { generateRandomString } from './functions.js';
+import { query } from 'express';
 
 
 //--------------------------------------------------------------------------------------
@@ -51,8 +52,8 @@ export async function getASpecificUser(userId) {
 
 export async function createANewClient(
     userName, safePassword, salt, firstName, lastName, eMail, dateOfBirth, phoneNumber, placeOfResidence, sex, biography,
-    profilePicture,
-    biographyVideo, rawPassword
+    profilePicturePath,
+    biographyVideoPath, rawPassword
 ) {
     const userTypeId = 2;
     const activationCode = generateRandomString(8);
@@ -78,16 +79,16 @@ export async function createANewClient(
         INSERT INTO users 
         (
             username, password, salt, first_name, last_name, e_mail, date_of_birth, phone_number, place_of_residence, sex, biography, 
-            registration_date, last_login_time, number_of_login_attempts, activation_code, picture, 
-            profile_status, video, user_type_id, raw_password
+            registration_date, last_login_time, number_of_login_attempts, activation_code, profile_picture_path, 
+            profile_status, biography_video_path, user_type_id, raw_password
         )
         VALUES 
         (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `,
         [
             userName, safePassword, salt, firstName, lastName, eMail, dateOfBirth, phoneNumber, placeOfResidence, sex, biography,
-            registrationDate, lastLoginTime, numberOfLoginAttempts, activationCode, profilePicture,
-            profileStatus, biographyVideo, userTypeId, rawPassword
+            registrationDate, lastLoginTime, numberOfLoginAttempts, activationCode, profilePicturePath,
+            profileStatus, biographyVideoPath, userTypeId, rawPassword
         ]
     );
 
@@ -98,8 +99,8 @@ export async function createANewClient(
 
 export async function createANewTrainer(
     userName, safePassword, salt, firstName, lastName, eMail, dateOfBirth, phoneNumber, placeOfResidence, sex, biography,
-    profilePicture, documentationDirectoryPath,
-    biographyVideo, rawPassword
+    profilePicturePath, documentationDirectoryPath,
+    biographyVideoPath, rawPassword
 ) {
     const userTypeId = 1;
     const activationCode = generateRandomString(8);
@@ -124,15 +125,15 @@ export async function createANewTrainer(
         `
         INSERT INTO users 
         (username, password, salt, first_name, last_name, e_mail, date_of_birth, phone_number, place_of_residence, sex, biography, 
-            registration_date, last_login_time, number_of_login_attempts, activation_code, picture, documentation_directory_path, 
-            profile_status, video, user_type_id, raw_password)
+            registration_date, last_login_time, number_of_login_attempts, activation_code, profile_picture_path, documentation_directory_path, 
+            profile_status, biography_video_path, user_type_id, raw_password)
         VALUES 
         (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `,
         [
             userName, safePassword, salt, firstName, lastName, eMail, dateOfBirth, phoneNumber, placeOfResidence, sex, biography,
-            registrationDate, lastLoginTime, numberOfLoginAttempts, activationCode, profilePicture, documentationDirectoryPath,
-            profileStatus, biographyVideo, userTypeId, rawPassword
+            registrationDate, lastLoginTime, numberOfLoginAttempts, activationCode, profilePicturePath, documentationDirectoryPath,
+            profileStatus, biographyVideoPath, userTypeId, rawPassword
         ]
     );
 
@@ -155,7 +156,7 @@ export async function createANewTrainer(
 //--------------------------------------------------------------------------------------
 
 export async function checkUsernameForLogin(insertedUsername) {
-
+    
     const [queryResult] = await pool.query(
         `
         SELECT *
@@ -169,8 +170,24 @@ export async function checkUsernameForLogin(insertedUsername) {
     return queryResult
 }
 
-export async function getUserData(user_id) {
+export async function checkUserRole(insertedUsername) {
+    const [queryResult] = await pool.query(
+        `
+        SELECT user_types.name
+        FROM users
+        JOIN user_types ON users.user_type_id = user_types.user_type_id
+        WHERE users.username = ?
+        LIMIT 1
+        `,
+        [insertedUsername]
+    );
+   
 
+    return queryResult
+}
+
+export async function getUserData(user_id) {
+    
     const [queryResult] = await pool.query(
         `
         SELECT *
@@ -184,34 +201,8 @@ export async function getUserData(user_id) {
     return queryResult
 }
 
-//--------------------------------------------------------------------------------------
-//-- RESTful API -- Login -- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-//--------------------------------------------------------------------------------------
-
-
-
-//--------------------------------------------------------------------------------------
-//-- RESTful API -- NOT SORTED IMPLEMENTATIONS -- ######################################
-//--------------------------------------------------------------------------------------
-
-export async function checkUserRole(insertedUsername) {
-    const [queryResult] = await pool.query(
-        `
-        SELECT user_types.name
-        FROM users
-        JOIN user_types ON users.user_type_id = user_types.user_type_id
-        WHERE users.username = ?
-        LIMIT 1
-        `,
-        [insertedUsername]
-    );
-
-
-    return queryResult
-}
-
 export async function getUserMeasurements(user_id) {
-
+    
     const [queryResult] = await pool.query(
         `
         SELECT *
@@ -225,7 +216,7 @@ export async function getUserMeasurements(user_id) {
 }
 
 export async function getTargetUserMeasurements(user_id) {
-
+    
     const [queryResult] = await pool.query(
         `
         SELECT *
@@ -238,87 +229,136 @@ export async function getTargetUserMeasurements(user_id) {
     return queryResult
 }
 
-//--------------------------------------------------------------------------------------
-//-- RESTful API -- NOT SORTED IMPLEMENTATIONS -- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-//--------------------------------------------------------------------------------------
-
-
+// console.log(await checkUsernameForLogin("nherci", "niki123"))
 
 //--------------------------------------------------------------------------------------
-//-- RESTful API -- Personalized training programs -- ##################################
+//-- RESTful API -- Login -- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //--------------------------------------------------------------------------------------
 
-export async function createANewPersonalizedProgram(
-    trainer_id, client_id, beginning_date, end_date, overall_objective, additional_information
-) {
-    const queryResult = await pool.query(
-        `
-        INSERT INTO personalized_programs 
-        (trainer_id, client_id, beginning_date, end_date, overall_objective, additional_information)
-        VALUES 
-        (?, ?, ?, ?, ?, ?)
-        `,
-        [
-            trainer_id, client_id, beginning_date, end_date, overall_objective, additional_information
-        ]
-    );
 
-    const newPersonalizedProgramId = queryResult[0].insertId
 
-    return getSpecificPerosnalizedProgramData(newPersonalizedProgramId)
-}
 
-export async function getSpecificPerosnalizedProgramData(personalized_program_id) {
+
+
+//--------------------------------------------------------------------------------------
+//-- RESTful API -- Exercises -- ###########################################################
+//--------------------------------------------------------------------------------------
+
+
+export async function checkIfExerciseExists(name) {
     const [queryResult] = await pool.query(
         `
         SELECT *
-        FROM personalized_programs
-        WHERE personalized_program_id = ?
+        FROM exercises
+        WHERE name = ?
+        LIMIT 1
         `,
-        [
-            personalized_program_id
-        ]
+        [name]
     );
 
-    return queryResult[0]
+    if (queryResult[0] == null) {
+        return true     //exercise name available
+    } else {
+        return false
+    }
 }
 
-//--------------------------------------------------------------------------------------
 
-export async function createANewCustomizedDay(
-    personalized_program_id, notes
+
+export async function createANewExercise(
+    user_id,
+    name,
+    description,
+    category,
+    difficulty_level,
+    video_guide_url,
+    step_by_step_instructions,
+    muscle_group,
+    secondary_muscle_group
 ) {
+    
     const queryResult = await pool.query(
         `
-        INSERT INTO customized_days 
-        (personalized_program_id, notes)
+        INSERT INTO exercises 
+        (user_id, name, description, category, difficulty_level, video_guide_url, step_by_step_instructions, muscle_group, secondary_muscle_group)
         VALUES 
-        (?, ?)
+        (?, ?, ?, ?, ?, ?, ?, ?, ?)
         `,
         [
-            personalized_program_id, notes
+            user_id, name, description, category, difficulty_level, video_guide_url, step_by_step_instructions, muscle_group, secondary_muscle_group
         ]
     );
 
-    const newCustomizedDayId = queryResult[0].insertId
+    const newExerciseId = queryResult[0].insertId;  //-- [0] must be defined here (to net get undefined) since you removed them at the start of the function...
 
-    return getSpecificCustomizedDayData(newCustomizedDayId)
+    return newExerciseId
 }
 
-export async function getSpecificCustomizedDayData(customized_day_id) {
+export async function getSpecificExerciseData(exercise_id){
     const [queryResult] = await pool.query(
         `
         SELECT *
-        FROM customized_days
-        WHERE customized_day_id = ?
+        FROM exercises
+        WHERE exercise_id = ?
         `,
-        [
-            customized_day_id
-        ]
+        [exercise_id]
     );
 
-    return queryResult[0]
+    return queryResult
 }
+
+
+
+export async function updateExercise(exercise_id, updatedData) {
+
+    const updateQuery = `
+        UPDATE exercises
+        SET
+            name = ?,
+            description = ?,
+            category = ?,
+            difficulty_level = ?,
+            video_guide_url = ?,
+            step_by_step_instructions = ?,
+            muscle_group = ?,
+            secondary_muscle_group = ?
+        WHERE exercise_id = ?;
+    `;
+
+    const values = [
+        updatedData.name,
+        updatedData.description,
+        updatedData.category,
+        updatedData.difficulty_level,
+        updatedData.video_guide_url,
+        updatedData.step_by_step_instructions,
+        updatedData.muscle_group,
+        updatedData.secondary_muscle_group,
+        exercise_id
+    ];
+
+    const queryResult = await pool.query(updateQuery, values);
+
+    return getSpecificExerciseData(exercise_id);
+}
+
+
+export async function deleteExercise(exercise_id) {
+ 
+    const deleteQuery = `
+        DELETE FROM exercises
+        WHERE exercise_id = ?;
+    `;
+
+    //await queryResult(deleteQuery, [exercise_id]);
+    const queryResult = await pool.query(deleteQuery, [exercise_id])
+    return queryResult
+}
+
+
+
+
+
 //--------------------------------------------------------------------------------------
-//-- RESTful API -- Personalized training programs -- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//-- RESTful API -- Exercises -- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //--------------------------------------------------------------------------------------
