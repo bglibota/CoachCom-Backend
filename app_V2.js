@@ -24,8 +24,6 @@ app.use(express.json())
 
 
 
-
-
 //--------------------------------------------------------------------------------------
 //-- RESTful API -- Registration -- ####################################################
 //--------------------------------------------------------------------------------------
@@ -234,7 +232,6 @@ app.post("/API_V2/users/register/trainer", async (req, res) => {
 
 
 
-
 //--------------------------------------------------------------------------------------
 //-- RESTful API -- Login -- ###########################################################
 //--------------------------------------------------------------------------------------
@@ -265,7 +262,7 @@ app.post("/API_V2/users/login", async (req, res) => {
         } = req.body;
 
         const searchedUser = await checkUsernameForLogin(insertedUsername)
-        
+
         if (searchedUser[0] == null) {       //queryResult[0]
             res.status(404).json(
                 {
@@ -296,7 +293,7 @@ app.post("/API_V2/users/login", async (req, res) => {
                     {
                         success: true,
                         message: "Successful login!",
-                        data:  {
+                        data: {
                             user_id: user_id,
                             role: roleName
                         }                      //MYB send JWT token in future ?@MMatijević?
@@ -316,22 +313,33 @@ app.post("/API_V2/users/login", async (req, res) => {
     }
 });
 
+//--------------------------------------------------------------------------------------
+//-- RESTful API -- Login -- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//--------------------------------------------------------------------------------------
+
+
+
+//--------------------------------------------------------------------------------------
+//-- RESTful API -- NOT SORTED IMPLEMENTATIONS -- ######################################
+//--------------------------------------------------------------------------------------
+
+//Implemented by R.Gladoics
 app.get("/API_V2/users/user", async (req, res) => {
 
     try {
 
-        const {user_id} = req.query;
-        
+        const { user_id } = req.query;
+
         const user = await getUserData(user_id)
-  
+
         res.status(200).json(
             {
                 success: true,
                 message: "Successful retrieval of user data",
-                data: user[0]                      
+                data: user[0]
             }
-        )  
-        
+        )
+
 
     } catch (error) {
         res.status(500).json(
@@ -348,11 +356,11 @@ app.get("/API_V2/users/user/measurements", async (req, res) => {
 
     try {
 
-        const {user_id} = req.query;
-        
+        const { user_id } = req.query;
+
         const measurements = await getUserMeasurements(user_id)
         const target_measurements = await getTargetUserMeasurements(user_id)
-  
+
         res.status(200).json(
             {
                 success: true,
@@ -360,16 +368,16 @@ app.get("/API_V2/users/user/measurements", async (req, res) => {
                 data: {
                     target_measurements: target_measurements,
                     physical_measurements: measurements
-                  }                    
+                }
             }
-        )  
-        
+        )
+
 
     } catch (error) {
         res.status(500).json(
             {
                 success: false,
-                message: "Error - /API_V2/users/user - Error checking credentials",
+                message: "Error - /API_V2/users/user/measurements - Error checking credentials",
                 data: [error]
             }
         )
@@ -377,9 +385,14 @@ app.get("/API_V2/users/user/measurements", async (req, res) => {
 });
 
 //--------------------------------------------------------------------------------------
-//-- RESTful API -- Login -- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//-- RESTful API -- NOT SORTED IMPLEMENTATIONS -- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //--------------------------------------------------------------------------------------
 
+
+
+//--------------------------------------------------------------------------------------
+//-- RESTful API -- Error handling and server listening -- #############################
+//--------------------------------------------------------------------------------------
 
 //Error handling...
 app.use((err, req, res, next) => {
@@ -387,8 +400,21 @@ app.use((err, req, res, next) => {
     res.status(500).send('Error - Something broke!')
 })
 
-
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
     console.log(`Server is running and listening on port ${port} ...`)
 });
+
+//--------------------------------------------------------------------------------------
+//-- RESTful API -- Error handling and server listening -- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//--------------------------------------------------------------------------------------
+
+
+
+//--------------------------------------------------------------------------------------
+//-- RESTful API -- Implementation part -- #############################################
+//--------------------------------------------------------------------------------------
+
+//--------------------------------------------------------------------------------------
+//-- RESTful API -- Implementation part -- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//--------------------------------------------------------------------------------------

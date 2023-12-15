@@ -155,7 +155,7 @@ export async function createANewTrainer(
 //--------------------------------------------------------------------------------------
 
 export async function checkUsernameForLogin(insertedUsername) {
-    
+
     const [queryResult] = await pool.query(
         `
         SELECT *
@@ -169,24 +169,8 @@ export async function checkUsernameForLogin(insertedUsername) {
     return queryResult
 }
 
-export async function checkUserRole(insertedUsername) {
-    const [queryResult] = await pool.query(
-        `
-        SELECT user_types.name
-        FROM users
-        JOIN user_types ON users.user_type_id = user_types.user_type_id
-        WHERE users.username = ?
-        LIMIT 1
-        `,
-        [insertedUsername]
-    );
-   
-
-    return queryResult
-}
-
 export async function getUserData(user_id) {
-    
+
     const [queryResult] = await pool.query(
         `
         SELECT *
@@ -200,8 +184,34 @@ export async function getUserData(user_id) {
     return queryResult
 }
 
+//--------------------------------------------------------------------------------------
+//-- RESTful API -- Login -- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//--------------------------------------------------------------------------------------
+
+
+
+//--------------------------------------------------------------------------------------
+//-- RESTful API -- NOT SORTED IMPLEMENTATIONS -- ######################################
+//--------------------------------------------------------------------------------------
+
+export async function checkUserRole(insertedUsername) {
+    const [queryResult] = await pool.query(
+        `
+        SELECT user_types.name
+        FROM users
+        JOIN user_types ON users.user_type_id = user_types.user_type_id
+        WHERE users.username = ?
+        LIMIT 1
+        `,
+        [insertedUsername]
+    );
+
+
+    return queryResult
+}
+
 export async function getUserMeasurements(user_id) {
-    
+
     const [queryResult] = await pool.query(
         `
         SELECT *
@@ -215,7 +225,7 @@ export async function getUserMeasurements(user_id) {
 }
 
 export async function getTargetUserMeasurements(user_id) {
-    
+
     const [queryResult] = await pool.query(
         `
         SELECT *
@@ -228,10 +238,7 @@ export async function getTargetUserMeasurements(user_id) {
     return queryResult
 }
 
-// console.log(await checkUsernameForLogin("nherci", "niki123"))
-
 //--------------------------------------------------------------------------------------
-//-- RESTful API -- Login -- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//-- RESTful API -- NOT SORTED IMPLEMENTATIONS -- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //--------------------------------------------------------------------------------------
-
 
