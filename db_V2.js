@@ -242,3 +242,47 @@ export async function getTargetUserMeasurements(user_id) {
 //-- RESTful API -- NOT SORTED IMPLEMENTATIONS -- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //--------------------------------------------------------------------------------------
 
+
+
+//--------------------------------------------------------------------------------------
+//-- RESTful API -- Personalized training programs -- ##################################
+//--------------------------------------------------------------------------------------
+
+export async function createANewPersonalizedProgram(
+    trainer_id, client_id, beginning_date, end_date, overall_objective, additional_information
+) {
+    const queryResult = await pool.query(
+        `
+        INSERT INTO personalized_programs 
+        (trainer_id, client_id, beginning_date, end_date, overall_objective, additional_information)
+        VALUES 
+        (?, ?, ?, ?, ?, ?)
+        `,
+        [
+            trainer_id, client_id, beginning_date, end_date, overall_objective, additional_information
+        ]
+    );
+
+    const newPersonalizedProgramId = queryResult[0].insertId
+
+    return getSpecificPerosnalizedProgramData(newPersonalizedProgramId)
+}
+
+export async function getSpecificPerosnalizedProgramData(personalized_program_id) {
+    const [queryResult] = await pool.query(
+        `
+        SELECT *
+        FROM personalized_programs
+        WHERE personalized_program_id = ?
+        `,
+        [
+            personalized_program_id
+        ]
+    );
+
+    return queryResult[0]
+}
+
+//--------------------------------------------------------------------------------------
+//-- RESTful API -- Personalized training programs -- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//--------------------------------------------------------------------------------------

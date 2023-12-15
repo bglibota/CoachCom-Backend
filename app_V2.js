@@ -15,7 +15,9 @@ import {
     checkUserRole,
     getUserData,
     getUserMeasurements,
-    getTargetUserMeasurements
+    getTargetUserMeasurements,
+    createANewPersonalizedProgram,
+    getSpecificPerosnalizedProgramData
 } from './db_V2.js';
 
 
@@ -306,7 +308,7 @@ app.post("/API_V2/users/login", async (req, res) => {
         res.status(500).json(
             {
                 success: false,
-                message: "Error - /API_V2/users/login - Error checking credentials",
+                message: "Error - /API_V2/users/login - Error checking credentials (user login)",
                 data: [error]
             }
         )
@@ -323,7 +325,7 @@ app.post("/API_V2/users/login", async (req, res) => {
 //-- RESTful API -- NOT SORTED IMPLEMENTATIONS -- ######################################
 //--------------------------------------------------------------------------------------
 
-//Implemented by R.Gladoics
+//Implemented by R.Gladoic
 app.get("/API_V2/users/user", async (req, res) => {
 
     try {
@@ -345,13 +347,14 @@ app.get("/API_V2/users/user", async (req, res) => {
         res.status(500).json(
             {
                 success: false,
-                message: "Error - /API_V2/users/user - Error checking credentials",
+                message: "Error - /API_V2/users/user - Error retrieving user data",
                 data: [error]
             }
         )
     }
 });
 
+//Implemented by R.Gladoic
 app.get("/API_V2/users/user/measurements", async (req, res) => {
 
     try {
@@ -377,7 +380,7 @@ app.get("/API_V2/users/user/measurements", async (req, res) => {
         res.status(500).json(
             {
                 success: false,
-                message: "Error - /API_V2/users/user/measurements - Error checking credentials",
+                message: "Error - /API_V2/users/user/measurements - Not Defined by the creator*",
                 data: [error]
             }
         )
@@ -388,6 +391,101 @@ app.get("/API_V2/users/user/measurements", async (req, res) => {
 //-- RESTful API -- NOT SORTED IMPLEMENTATIONS -- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //--------------------------------------------------------------------------------------
 
+//--------------------------------------------------------------------------------------
+//-- RESTful API -- Personalized training programs -- ##################################
+//--------------------------------------------------------------------------------------
+
+app.post("/API_V2/personalized_program", async (req, res) => {
+
+    try {
+
+        const expectedJSONObjectElements = [
+            "trainer_id",
+            "client_id",
+            "beginning_date",
+            "end_date",
+            "overall_objective",
+            "additional_information"
+        ];
+
+        // Checks if all expected object elements are present in body of the request
+        const hasAllExpectedObjectElements = expectedJSONObjectElements.every(field => field in req.body);
+
+        if (!hasAllExpectedObjectElements) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid request body. Missing or unexpected object elements!',
+                data: []
+            });
+        }
+
+        const {
+            trainer_id,
+            client_id,
+            beginning_date,
+            end_date,
+            overall_objective,
+            additional_information
+        } = req.body;
+
+        const newPersonalizedProgram = await createANewPersonalizedProgram(
+            trainer_id,
+            client_id,
+            beginning_date,
+            end_date,
+            overall_objective,
+            additional_information
+        )
+
+        res.status(201).json(
+            {
+                success: true,
+                message: "New personalized program successfuly created by trainer (user_id = " + trainer_id + ") for client (user_id = " + client_id + ")",
+                data: [newPersonalizedProgram]
+            }
+        )
+
+    } catch (error) {
+        res.status(500).json(
+            {
+                success: false,
+                message: "Error - /API_V2/personalized_program - Error creating personalized programs",
+                data: [error]
+            }
+        )
+    }
+});
+
+app.get("/API_V2/personalized_program", async (req, res) => {
+
+    try {
+
+        const { personalized_program_id } = req.query;
+
+        const personalizedProgramData = await getSpecificPerosnalizedProgramData(personalized_program_id)
+
+        res.status(200).json(
+            {
+                success: true,
+                message: "Successful retrieval of user data",
+                data: [personalizedProgramData]
+            }
+        )
+
+    } catch (error) {
+        res.status(500).json(
+            {
+                success: false,
+                message: "Error - /API_V2/personalized_program - Error creating personalized programs",
+                data: [error]
+            }
+        )
+    }
+});
+
+//--------------------------------------------------------------------------------------
+//-- RESTful API -- Personalized training programs -- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+//--------------------------------------------------------------------------------------
 
 
 //--------------------------------------------------------------------------------------
