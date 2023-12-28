@@ -24,7 +24,8 @@ import {
     createANewPersonalizedProgram,
     getSpecificPerosnalizedProgramData,
     createANewCustomizedDay,
-    getSpecificCustomizedDayData
+    getSpecificCustomizedDayData,
+    createPhysicalMeasurements
 } from './db_V2.js';
 
 
@@ -842,6 +843,71 @@ app.get("/API_V2/users/user/measurements", async (req, res) => {
             {
                 success: false,
                 message: "Error - /API_V2/users/user/measurements - Not Defined by the creator*",
+                data: [error]
+            }
+        )
+    }
+});
+
+app.post("/API_V2/users/user/measurements/physical/create", async (req, res) => {
+
+    try {
+
+        const expectedJSONObjectElements = [
+            "user_id",
+            "weight",
+            "waist_circumference",
+            "chest_circumference",
+            "arm_circumference",
+            "leg_circumference",
+            "hip_circumference"
+        ];
+
+        // Checks if all expected object elements are present in body of the request
+        const hasAllExpectedObjectElements = expectedJSONObjectElements.every(field => field in req.body);      //@IvanGiljević - Try to understand more clearely later...
+
+        if (!hasAllExpectedObjectElements) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid request body. Missing or unexpected object elements!',
+                data: []
+            });
+        }
+
+        const {
+            user_id,
+            weight,
+            waist_circumference,
+            chest_circumference,
+            arm_circumference,
+            leg_circumference,
+            hip_circumference
+        } = req.body;
+
+        await createPhysicalMeasurements(
+            user_id,
+            weight,
+            waist_circumference,
+            chest_circumference,
+            arm_circumference,
+            leg_circumference,
+            hip_circumference                
+        )
+
+        res.status(200).json(
+            {
+                success: true,
+                message: "New physical measurements were successfully added!",
+                data: []
+            }
+        )
+        
+
+    } catch (error) {
+        res.status(500).json(
+            {
+                success: false,
+                message: "Error - /API_V2/users/user/measurements/physical/create - Error creating a new measurements",
                 data: [error]
             }
         )

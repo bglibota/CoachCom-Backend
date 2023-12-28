@@ -435,6 +435,33 @@ export async function getTargetUserMeasurements(user_id) {
     return queryResult
 }
 
+export async function createPhysicalMeasurements(
+    user_id,
+    weight,
+    waist_circumference,
+    chest_circumference,
+    arm_circumference,
+    leg_circumference,
+    hip_circumference 
+) {
+
+    const date = new Date();
+
+    const queryResult = await pool.query(
+        `
+        INSERT INTO physical_measurements 
+        (user_id, weight, waist_circumference, chest_circumference, arm_circumference, leg_circumference, hip_circumference, date)
+        VALUES 
+        (?, ?, ?, ?, ?, ?, ?, ?)
+        `,
+        [
+            user_id, weight, waist_circumference, chest_circumference, arm_circumference, leg_circumference, hip_circumference, date
+        ]
+    );
+
+    return queryResult
+}
+
 //--------------------------------------------------------------------------------------
 //-- RESTful API -- NOT SORTED IMPLEMENTATIONS -- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //--------------------------------------------------------------------------------------
