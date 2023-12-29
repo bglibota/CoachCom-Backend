@@ -465,6 +465,49 @@ export async function createPhysicalMeasurements(
     return queryResult
 }
 
+export async function updateTargetMeasurements(
+    user_id,
+    height,
+    target_weight,
+    target_waist_circumference,
+    target_chest_circumference,
+    target_arm_circumference,
+    target_leg_circumference,
+    target_hip_circumference
+) {
+    const date = new Date();
+
+    const queryResult = await pool.query(
+        `
+        UPDATE target_measurements
+        SET
+            height = ?,
+            target_weight = ?,
+            target_waist_circumference = ?,
+            target_chest_circumference = ?,
+            target_arm_circumference = ?,
+            target_leg_circumference = ?,
+            target_hip_circumference = ?,
+            date = ?
+        WHERE user_id = ?;
+        `,
+        [
+            height,
+            target_weight,
+            target_waist_circumference,
+            target_chest_circumference,
+            target_arm_circumference,
+            target_leg_circumference,
+            target_hip_circumference,
+            date,
+            user_id
+        ]
+    );
+
+    return queryResult;
+}
+
+
 //--------------------------------------------------------------------------------------
 //-- RESTful API -- NOT SORTED IMPLEMENTATIONS -- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 //--------------------------------------------------------------------------------------
