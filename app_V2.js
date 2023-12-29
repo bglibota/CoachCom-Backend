@@ -14,7 +14,7 @@ import {
     checkUsernameForLogin,
     checkUserRole,
     getUserData,
-    getUserMeasurements,
+    getPhysicalMeasurements,
     getTargetUserMeasurements,
     checkIfExerciseExists,
     createANewExercise,
@@ -823,7 +823,7 @@ app.get("/API_V2/users/user/measurements", async (req, res) => {
 
         const { user_id } = req.query;
 
-        const measurements = await getUserMeasurements(user_id)
+        const physical_measurements = await getPhysicalMeasurements(user_id)
         const target_measurements = await getTargetUserMeasurements(user_id)
 
         res.status(200).json(
@@ -832,7 +832,7 @@ app.get("/API_V2/users/user/measurements", async (req, res) => {
                 message: "Successful retrieval of measurements data",
                 data: {
                     target_measurements: target_measurements,
-                    physical_measurements: measurements
+                    physical_measurements: physical_measurements
                 }
             }
         )

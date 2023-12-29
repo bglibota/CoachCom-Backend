@@ -176,7 +176,8 @@ export async function getUserData(user_id) {
 
     const [queryResult] = await pool.query(
         `
-        SELECT *
+        SELECT *,
+        DATE_FORMAT(date_of_birth, '%d-%m-%Y') AS formatted_birthdate
         FROM users
         WHERE user_id = ?
         LIMIT 1
@@ -407,11 +408,12 @@ export async function checkUserRole(insertedUsername) {
     return queryResult
 }
 
-export async function getUserMeasurements(user_id) {
+export async function getPhysicalMeasurements(user_id) {
 
     const [queryResult] = await pool.query(
         `
-        SELECT *
+        SELECT *,
+        DATE_FORMAT(date, '%d-%m-%Y') AS formatted_date
         FROM physical_measurements
         WHERE user_id = ?
         `,
@@ -425,7 +427,8 @@ export async function getTargetUserMeasurements(user_id) {
 
     const [queryResult] = await pool.query(
         `
-        SELECT *
+        SELECT *,
+        DATE_FORMAT(date, '%d-%m-%Y') AS formatted_date
         FROM target_measurements
         WHERE user_id = ?
         `,
