@@ -26,7 +26,8 @@ import {
     createANewCustomizedDay,
     getSpecificCustomizedDayData,
     createPhysicalMeasurements,
-    updateTargetMeasurements
+    updateTargetMeasurements,
+    updateClientPersonalInformation
 } from './db_V2.js';
 
 
@@ -975,6 +976,73 @@ app.put("/API_V2/users/user/measurements/target/update", async (req, res) => {
             {
                 success: false,
                 message: "Error - /API_V2/users/user/measurements/target/update - Error when changing target measurements",
+                data: [error]
+            }
+        )
+    }
+});
+
+app.patch("/API_V2/users/user/client/update", async (req, res) => {
+
+    try {
+
+        const expectedJSONObjectElements = [
+            "user_id",
+            "first_name",
+            "last_name",
+            "e_mail",
+            "date_of_birth",
+            "phone_number",
+            "place_of_residence",
+            "sex"
+        ];
+
+        const hasAllExpectedObjectElements = expectedJSONObjectElements.every(field => field in req.body);    
+
+        if (!hasAllExpectedObjectElements) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid request body. Missing or unexpected object elements!',
+                data: []
+            });
+        }
+
+        const {
+            user_id,
+            first_name,
+            last_name,
+            e_mail,
+            date_of_birth,
+            phone_number,
+            place_of_residence,
+            sex
+        } = req.body;
+
+        await updateClientPersonalInformation(
+            user_id,
+            first_name,
+            last_name,
+            e_mail,
+            date_of_birth,
+            phone_number,
+            place_of_residence,
+            sex                
+        )
+
+        res.status(200).json(
+            {
+                success: true,
+                message: "Personal information has been successfully changed!",
+                data: []
+            }
+        )
+        
+
+    } catch (error) {
+        res.status(500).json(
+            {
+                success: false,
+                message: "Error - /API_V2/users/user/client/update - Error when changing personal information",
                 data: [error]
             }
         )

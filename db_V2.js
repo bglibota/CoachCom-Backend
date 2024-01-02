@@ -507,6 +507,45 @@ export async function updateTargetMeasurements(
     return queryResult;
 }
 
+export async function updateClientPersonalInformation(
+    user_id,
+    first_name,
+    last_name,
+    e_mail,
+    date_of_birth,
+    phone_number,
+    place_of_residence,
+    sex
+) {
+
+    const queryResult = await pool.query(
+        `
+        UPDATE users
+        SET
+            first_name = ?,
+            last_name = ?,
+            e_mail = ?,
+            date_of_birth = ?,
+            phone_number = ?,
+            place_of_residence = ?,
+            sex = ?
+        WHERE user_id = ?;
+        `,
+        [
+            first_name,
+            last_name,
+            e_mail,
+            date_of_birth,
+            phone_number,
+            place_of_residence,
+            sex,
+            user_id
+        ]
+    );
+
+    return queryResult;
+}
+
 
 //--------------------------------------------------------------------------------------
 //-- RESTful API -- NOT SORTED IMPLEMENTATIONS -- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
