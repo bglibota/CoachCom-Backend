@@ -546,6 +546,33 @@ export async function updateClientPersonalInformation(
     return queryResult;
 }
 
+export async function newPassword(
+    user_id, 
+    safePassword, 
+    userSalt, 
+    new_password
+) {
+
+    const queryResult = await pool.query(
+        `
+        UPDATE users
+        SET
+            password = ?,
+            salt = ?,
+            raw_password = ?
+        WHERE user_id = ?;
+        `,
+        [
+            safePassword,
+            userSalt,
+            new_password,
+            user_id
+        ]
+    );
+
+    return queryResult;
+}
+
 
 //--------------------------------------------------------------------------------------
 //-- RESTful API -- NOT SORTED IMPLEMENTATIONS -- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

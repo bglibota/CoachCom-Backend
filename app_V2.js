@@ -27,7 +27,8 @@ import {
     getSpecificCustomizedDayData,
     createPhysicalMeasurements,
     updateTargetMeasurements,
-    updateClientPersonalInformation
+    updateClientPersonalInformation,
+    newPassword
 } from './db_V2.js';
 
 
@@ -1043,6 +1044,72 @@ app.patch("/API_V2/users/user/client/update", async (req, res) => {
             {
                 success: false,
                 message: "Error - /API_V2/users/user/client/update - Error when changing personal information",
+                data: [error]
+            }
+        )
+    }
+});
+
+app.patch("/API_V2/users/user/password", async (req, res) => {
+
+    try {
+
+        const expectedJSONObjectElements = [
+            "user_id",
+            "current_password",
+            "new_password"
+        ];
+
+        const hasAllExpectedObjectElements = expectedJSONObjectElements.every(field => field in req.body);    
+
+        if (!hasAllExpectedObjectElements) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid request body. Missing or unexpected object elements!',
+                data: []
+            });
+        }
+
+        const {
+            user_id,
+            current_password,
+            new_password
+        } = req.body;
+
+        const user = await getUserData(user_id)
+
+        const hashUserSaltedInsertedPassword = crypto.createHash('sha256').update(current_password + user[0].salt).digest('hex')
+
+        if (user[0].password != hashUserSaltedInsertedPassword) {
+
+            res.status(401).json(
+                {
+                    success: false,
+                    message: "User's password incorrect!",
+                    data: []
+                }
+            )
+        } else {
+                    
+            const userSalt = crypto.randomBytes(16).toString('hex') 
+            const safePassword = crypto.createHash('sha256').update(new_password + userSalt).digest('hex')
+
+            await newPassword(user_id, safePassword, userSalt, new_password) 
+
+            res.status(200).json(
+                {
+                    success: true,
+                    message: "Password has been successfully changed!",
+                    data: []                      
+                }
+            )
+        }        
+
+    } catch (error) {
+        res.status(500).json(
+            {
+                success: false,
+                message: "Error - /API_V2/users/user/password - Error when changing password",
                 data: [error]
             }
         )
