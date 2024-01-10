@@ -43,7 +43,7 @@ app.use(express.json())
 //-- RESTful API -- Registration -- ####################################################
 //--------------------------------------------------------------------------------------
 
-app.post("/API_V2/users/register/client", async (req, res) => {
+app.post("/api/users/register/client", async (req, res) => {
 
     try {
 
@@ -133,7 +133,7 @@ app.post("/API_V2/users/register/client", async (req, res) => {
         res.status(500).json(
             {
                 success: false,
-                message: "Error - /API_V2/users/register/client - Error registering new client",
+                message: "Error - /api/users/register/client - Error registering new client",
                 data: [error]
             }
         )
@@ -142,7 +142,7 @@ app.post("/API_V2/users/register/client", async (req, res) => {
 
 
 
-app.post("/API_V2/users/register/trainer", async (req, res) => {
+app.post("/api/users/register/trainer", async (req, res) => {
 
     try {
 
@@ -235,7 +235,7 @@ app.post("/API_V2/users/register/trainer", async (req, res) => {
         res.status(500).json(
             {
                 success: false,
-                message: "Error - /API_V2/users/register/trainer - Error registering new trainer",
+                message: "Error - /api/users/register/trainer - Error registering new trainer",
                 data: [error]
             }
         )
@@ -252,7 +252,7 @@ app.post("/API_V2/users/register/trainer", async (req, res) => {
 //-- RESTful API -- Login -- ###########################################################
 //--------------------------------------------------------------------------------------
 
-app.post("/API_V2/users/login", async (req, res) => {
+app.post("/api/users/login", async (req, res) => {
 
     try {
 
@@ -322,7 +322,7 @@ app.post("/API_V2/users/login", async (req, res) => {
         res.status(500).json(
             {
                 success: false,
-                message: "Error - /API_V2/users/login - Error checking credentials (user login)",
+                message: "Error - /api/users/login - Error checking credentials (user login)",
                 data: [error]
             }
         )
@@ -343,7 +343,7 @@ app.post("/API_V2/users/login", async (req, res) => {
 
 
 
-app.post("/API_V2/exercises/create", async (req, res) => {
+app.post("/api/exercises/create", async (req, res) => {
 
     try {
 
@@ -419,14 +419,14 @@ app.post("/API_V2/exercises/create", async (req, res) => {
         res.status(500).json(
             {
                 success: false,
-                message: "Error - /API_V2/exercises/create - Error creating a new exercise",
+                message: "Error - /api/exercises/create - Error creating a new exercise",
                 data: [error]
             }
         )
     }
 });
 
-app.get("/API_V2/exercises/read", async (req, res) => {
+app.get("/api/exercises/read", async (req, res) => {
 
     try {
 
@@ -447,7 +447,7 @@ app.get("/API_V2/exercises/read", async (req, res) => {
         res.status(500).json(
             {
                 success: false,
-                message: "Error - /API_V2/exercises/read - Error checking exercise data",
+                message: "Error - /api/exercises/read - Error checking exercise data",
                 data: [error]
             }
         )
@@ -455,7 +455,7 @@ app.get("/API_V2/exercises/read", async (req, res) => {
 });
 
 
-app.put("/API_V2/exercises/update", async (req, res) => {
+app.put("/api/exercises/update", async (req, res) => {
     try {
         const { exercise_id } = req.query;
 
@@ -527,14 +527,14 @@ app.put("/API_V2/exercises/update", async (req, res) => {
     } catch (error) {
         res.status(500).json({
             success: false,
-            message: 'Error - /API_V2/exercises/update - Error updating exercise',
+            message: 'Error - /api/exercises/update - Error updating exercise',
             data: [error]
         });
     }
 });
 
 
-app.delete("/API_V2/exercises/delete", async (req, res) => {
+app.delete("/api/exercises/delete", async (req, res) => {
     try {
         const { exercise_id } = req.query;
 
@@ -569,7 +569,7 @@ app.delete("/API_V2/exercises/delete", async (req, res) => {
     } catch (error) {
         res.status(500).json({
             success: false,
-            message: 'Error - /API_V2/exercises/delete - Error deleting exercise',
+            message: 'Error - /api/exercises/delete - Error deleting exercise',
             data: [error]
         });
     }
@@ -588,7 +588,7 @@ app.delete("/API_V2/exercises/delete", async (req, res) => {
 //-- RESTful API -- Personalized training programs -- ##################################
 //--------------------------------------------------------------------------------------
 
-app.post("/API_V2/personalized_program", async (req, res) => {
+app.post("/api/personalized_program", async (req, res) => {
 
     try {
 
@@ -642,14 +642,14 @@ app.post("/API_V2/personalized_program", async (req, res) => {
         res.status(500).json(
             {
                 success: false,
-                message: "Error - /API_V2/personalized_program - Error creating personalized program",
+                message: "Error - /api/personalized_program - Error creating personalized program",
                 data: [error]
             }
         )
     }
 });
 
-app.get("/API_V2/personalized_program", async (req, res) => {
+app.get("/api/personalized_program", async (req, res) => {
 
     try {
 
@@ -681,7 +681,7 @@ app.get("/API_V2/personalized_program", async (req, res) => {
         res.status(500).json(
             {
                 success: false,
-                message: "Error - /API_V2/personalized_program - Error getting data for a specific personalized programs",
+                message: "Error - /api/personalized_program - Error getting data for a specific personalized programs",
                 data: [error]
             }
         )
@@ -690,7 +690,7 @@ app.get("/API_V2/personalized_program", async (req, res) => {
 
 //-------------------------------------------------------------------------------------
 
-app.post("/API_V2/customized_days", async (req, res) => {
+app.post("/api/customized_days", async (req, res) => {
     try {
 
         const expectedJSONObjectElements = [
@@ -733,7 +733,7 @@ app.post("/API_V2/customized_days", async (req, res) => {
         res.status(500).json(
             {
                 success: false,
-                message: "Error - /API_V2/customized_days - Error creating customized day",
+                message: "Error - /api/customized_days - Error creating customized day",
                 data: [error]
             }
         )
@@ -741,7 +741,7 @@ app.post("/API_V2/customized_days", async (req, res) => {
 
 });
 
-app.get("/API_V2/customized_days", async (req, res) => {
+app.get("/api/customized_days", async (req, res) => {
 
     try {
 
@@ -773,7 +773,7 @@ app.get("/API_V2/customized_days", async (req, res) => {
         res.status(500).json(
             {
                 success: false,
-                message: "Error - /API_V2/customized_days - Error getting data for a specific customized day",
+                message: "Error - /api/customized_days - Error getting data for a specific customized day",
                 data: [error]
             }
         )
@@ -791,7 +791,7 @@ app.get("/API_V2/customized_days", async (req, res) => {
 //--------------------------------------------------------------------------------------
 
 //Implemented by R.Gladoic
-app.get("/API_V2/users/user", async (req, res) => {
+app.get("/api/users/user", async (req, res) => {
 
     try {
 
@@ -812,7 +812,7 @@ app.get("/API_V2/users/user", async (req, res) => {
         res.status(500).json(
             {
                 success: false,
-                message: "Error - /API_V2/users/user - Error retrieving user data",
+                message: "Error - /api/users/user - Error retrieving user data",
                 data: [error]
             }
         )
@@ -820,7 +820,7 @@ app.get("/API_V2/users/user", async (req, res) => {
 });
 
 //Implemented by R.Gladoic
-app.get("/API_V2/users/user/measurements", async (req, res) => {
+app.get("/api/users/user/measurements", async (req, res) => {
 
     try {
 
@@ -845,14 +845,14 @@ app.get("/API_V2/users/user/measurements", async (req, res) => {
         res.status(500).json(
             {
                 success: false,
-                message: "Error - /API_V2/users/user/measurements ",
+                message: "Error - /api/users/user/measurements ",
                 data: [error]
             }
         )
     }
 });
 
-app.post("/API_V2/users/user/measurements/physical/create", async (req, res) => {
+app.post("/api/users/user/measurements/physical/create", async (req, res) => {
 
     try {
 
@@ -909,14 +909,14 @@ app.post("/API_V2/users/user/measurements/physical/create", async (req, res) => 
         res.status(500).json(
             {
                 success: false,
-                message: "Error - /API_V2/users/user/measurements/physical/create - Error creating a new measurements",
+                message: "Error - /api/users/user/measurements/physical/create - Error creating a new measurements",
                 data: [error]
             }
         )
     }
 });
 
-app.put("/API_V2/users/user/measurements/target/update", async (req, res) => {
+app.put("/api/users/user/measurements/target/update", async (req, res) => {
 
     try {
 
@@ -976,14 +976,14 @@ app.put("/API_V2/users/user/measurements/target/update", async (req, res) => {
         res.status(500).json(
             {
                 success: false,
-                message: "Error - /API_V2/users/user/measurements/target/update - Error when changing target measurements",
+                message: "Error - /api/users/user/measurements/target/update - Error when changing target measurements",
                 data: [error]
             }
         )
     }
 });
 
-app.patch("/API_V2/users/user/client/update", async (req, res) => {
+app.patch("/api/users/user/client/update", async (req, res) => {
 
     try {
 
@@ -1043,14 +1043,14 @@ app.patch("/API_V2/users/user/client/update", async (req, res) => {
         res.status(500).json(
             {
                 success: false,
-                message: "Error - /API_V2/users/user/client/update - Error when changing personal information",
+                message: "Error - /api/users/user/client/update - Error when changing personal information",
                 data: [error]
             }
         )
     }
 });
 
-app.patch("/API_V2/users/user/password", async (req, res) => {
+app.patch("/api/users/user/password", async (req, res) => {
 
     try {
 
@@ -1109,7 +1109,7 @@ app.patch("/API_V2/users/user/password", async (req, res) => {
         res.status(500).json(
             {
                 success: false,
-                message: "Error - /API_V2/users/user/password - Error when changing password",
+                message: "Error - /api/users/user/password - Error when changing password",
                 data: [error]
             }
         )
