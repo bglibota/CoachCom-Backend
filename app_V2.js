@@ -28,7 +28,8 @@ import {
     createPhysicalMeasurements,
     updateTargetMeasurements,
     updateClientPersonalInformation,
-    newPassword
+    newPassword,
+    createMealPlan
 } from './db_V2.js';
 
 
@@ -1110,6 +1111,70 @@ app.patch("/api/users/user/password", async (req, res) => {
             {
                 success: false,
                 message: "Error - /api/users/user/password - Error when changing password",
+                data: [error]
+            }
+        )
+    }
+});
+
+app.post("/api/meal_plan/create", async (req, res) => {
+
+    try {
+
+        const expectedJSONObjectElements = [
+            "user_id",
+            "day",
+            "breakfast",
+            "morning_snack",
+            "lunch",
+            "afternoon_snack",
+            "dinner"
+        ];
+
+        const hasAllExpectedObjectElements = expectedJSONObjectElements.every(field => field in req.body);      
+
+        if (!hasAllExpectedObjectElements) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid request body. Missing or unexpected object elements!',
+                data: []
+            });
+        }
+
+        const {
+            user_id,
+            day,
+            breakfast,
+            morning_snack,
+            lunch,
+            afternoon_snack,
+            dinner
+        } = req.body;
+
+        await createMealPlan(
+            user_id,
+            day,
+            breakfast,
+            morning_snack,
+            lunch,
+            afternoon_snack,
+            dinner               
+        )
+
+        res.status(200).json(
+            {
+                success: true,
+                message: "New meal plan successfully added!",
+                data: []
+            }
+        )
+        
+
+    } catch (error) {
+        res.status(500).json(
+            {
+                success: false,
+                message: "Error - /api/meal_plan/create - Error creating a new meal plan",
                 data: [error]
             }
         )
