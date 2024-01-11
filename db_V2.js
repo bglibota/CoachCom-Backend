@@ -573,6 +573,30 @@ export async function newPassword(
     return queryResult;
 }
 
+export async function createMealPlan(
+    user_id,
+    day,
+    breakfast,
+    morning_snack,
+    lunch,
+    afternoon_snack,
+    dinner 
+) {
+
+    const queryResult = await pool.query(
+        `
+        INSERT INTO meal_plan 
+        (user_id, day, breakfast, morning_snack, lunch, afternoon_snack, dinner)
+        VALUES 
+        (?, ?, ?, ?, ?, ?, ?)
+        `,
+        [
+            user_id, day, breakfast, morning_snack, lunch, afternoon_snack, dinner
+        ]
+    );
+
+    return queryResult
+}
 
 //--------------------------------------------------------------------------------------
 //-- RESTful API -- NOT SORTED IMPLEMENTATIONS -- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
