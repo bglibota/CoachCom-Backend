@@ -576,22 +576,38 @@ export async function newPassword(
 export async function createMealPlan(
     user_id,
     day,
+    breakfast_picture,
     breakfast,
+    morning_snack_picture,
     morning_snack,
+    lunch_picture,
     lunch,
+    afternoon_snack_picture,
     afternoon_snack,
-    dinner 
+    dinner_picture,
+    dinner   
 ) {
 
     const queryResult = await pool.query(
         `
         INSERT INTO meal_plan 
-        (user_id, day, breakfast, morning_snack, lunch, afternoon_snack, dinner)
+        (user_id, day, breakfast_picture, breakfast, morning_snack_picture, morning_snack, lunch_picture, lunch, afternoon_snack_picture, afternoon_snack, dinner_picture, dinner)
         VALUES 
-        (?, ?, ?, ?, ?, ?, ?)
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `,
         [
-            user_id, day, breakfast, morning_snack, lunch, afternoon_snack, dinner
+            user_id, 
+            day, 
+            breakfast_picture ? Buffer.from(breakfast_picture, 'base64') : null,
+            breakfast,
+            morning_snack_picture ? Buffer.from(morning_snack_picture, 'base64') : null,
+            morning_snack,
+            lunch_picture ? Buffer.from(lunch_picture, 'base64') : null,
+            lunch,
+            afternoon_snack_picture ? Buffer.from(afternoon_snack_picture, 'base64') : null,
+            afternoon_snack,
+            dinner_picture ? Buffer.from(dinner_picture, 'base64') : null,
+            dinner
         ]
     );
 
