@@ -1,11 +1,14 @@
-// const express = require('express');     //Loading express module
+
 import express from 'express';
-const app = express();                  //Objekt 'app' koji reprezentira "aplikaciju", sadrži različite korisne funk.
+import bodyParser from 'body-parser';
+const app = express();                  
+
+app.use(bodyParser.json({ limit: '10mb' }));
 
 import crypto from 'crypto';
 
 
-//Importing functions from the db.js file
+
 import {
     checkIfUsernameIsAvailable,
     getASpecificUser,
@@ -1131,12 +1134,12 @@ app.post("/api/meal_plan/create", async (req, res) => {
             "dinner"
         ];
 
-        const hasAllExpectedObjectElements = expectedJSONObjectElements.every(field => field in req.body);      
+        const emptyFields = expectedJSONObjectElements.filter(field => req.body[field] === '');      
 
-        if (!hasAllExpectedObjectElements) {
+        if (emptyFields.length > 0) {
             return res.status(400).json({
                 success: false,
-                message: 'Invalid request body. Missing or unexpected object elements!',
+                message: "Some fields are empty.",
                 data: []
             });
         }
@@ -1144,20 +1147,30 @@ app.post("/api/meal_plan/create", async (req, res) => {
         const {
             user_id,
             day,
+            breakfast_picture,
             breakfast,
+            morning_snack_picture,
             morning_snack,
+            lunch_picture,
             lunch,
+            afternoon_snack_picture,
             afternoon_snack,
+            dinner_picture,
             dinner
         } = req.body;
 
         await createMealPlan(
             user_id,
             day,
+            breakfast_picture,
             breakfast,
+            morning_snack_picture,
             morning_snack,
+            lunch_picture,
             lunch,
+            afternoon_snack_picture,
             afternoon_snack,
+            dinner_picture,
             dinner               
         )
 
