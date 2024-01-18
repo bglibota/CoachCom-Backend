@@ -14,9 +14,7 @@ import { generateRandomString } from './functions.js';
 import { query } from 'express';        //???What is this used for ??
 
 
-//--------------------------------------------------------------------------------------
-//-- RESTful API -- Registration -- ####################################################
-//--------------------------------------------------------------------------------------
+
 
 export async function checkIfUsernameIsAvailable(insertedUsername) {
     const [queryResult] = await pool.query(
@@ -30,12 +28,11 @@ export async function checkIfUsernameIsAvailable(insertedUsername) {
     );
 
     if (queryResult[0] == null) {
-        return true     //username available
+        return true    
     } else {
         return false
     }
 }
-// console.log(await checkIfUsernameIsAvailable("kkk"))
 
 export async function getASpecificUser(userId) {
     const [queryResult] = await pool.query(
@@ -47,7 +44,7 @@ export async function getASpecificUser(userId) {
         `,
         [userId]
     );
-    return queryResult[0]   // [0] First element of an array
+    return queryResult[0]   
 }
 
 export async function createANewClient(
@@ -64,7 +61,7 @@ export async function createANewClient(
     const currentDateTime = new Date();
 
     const year = currentDateTime.getFullYear();
-    const month = String(currentDateTime.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+    const month = String(currentDateTime.getMonth() + 1).padStart(2, '0'); 
     const day = String(currentDateTime.getDate()).padStart(2, '0');
     const hours = String(currentDateTime.getHours()).padStart(2, '0');
     const minutes = String(currentDateTime.getMinutes()).padStart(2, '0');
@@ -92,7 +89,7 @@ export async function createANewClient(
         ]
     );
 
-    const newClientId = queryResult[0].insertId;  //-- [0] must be defined here (to net get undefined) since you removed them at the start of the function...
+    const newClientId = queryResult[0].insertId;  
 
     return getASpecificUser(newClientId)
 }
@@ -137,23 +134,10 @@ export async function createANewTrainer(
         ]
     );
 
-    const newTrainerId = queryResult[0].insertId;  //-- [0] must be defined here (to net get undefined) since you removed them at the start of the function...
+    const newTrainerId = queryResult[0].insertId;  
 
     return getASpecificUser(newTrainerId)
 }
-
-//If needed - Formated version for pleasent croatian viewing...
-// console.log(new Date().toLocaleString('hr-HR', { timeZone: 'Europe/Zagreb', hour12: false }))
-
-//--------------------------------------------------------------------------------------
-//-- RESTful API -- Registration -- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-//--------------------------------------------------------------------------------------
-
-
-
-//--------------------------------------------------------------------------------------
-//-- RESTful API -- Login -- ###########################################################
-//--------------------------------------------------------------------------------------
 
 export async function checkUsernameForLogin(insertedUsername) {
 
@@ -188,16 +172,6 @@ export async function getUserData(user_id) {
     return queryResult
 }
 
-//--------------------------------------------------------------------------------------
-//-- RESTful API -- Login -- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-//--------------------------------------------------------------------------------------
-
-
-
-//--------------------------------------------------------------------------------------
-//-- RESTful API -- Exercises -- ###########################################################
-//--------------------------------------------------------------------------------------
-
 export async function checkIfExerciseExists(name) {
     const [queryResult] = await pool.query(
         `
@@ -210,7 +184,7 @@ export async function checkIfExerciseExists(name) {
     );
 
     if (queryResult[0] == null) {
-        return true     //exercise name available
+        return true     
     } else {
         return false
     }
@@ -240,7 +214,7 @@ export async function createANewExercise(
         ]
     );
 
-    const newExerciseId = queryResult[0].insertId;  //-- [0] must be defined here (to net get undefined) since you removed them at the start of the function...
+    const newExerciseId = queryResult[0].insertId; 
 
     return newExerciseId
 }
@@ -298,20 +272,11 @@ export async function deleteExercise(exercise_id) {
         WHERE exercise_id = ?;
     `;
 
-    //await queryResult(deleteQuery, [exercise_id]);
+
     const queryResult = await pool.query(deleteQuery, [exercise_id])
     return queryResult
 }
 
-//--------------------------------------------------------------------------------------
-//-- RESTful API -- Exercises -- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-//--------------------------------------------------------------------------------------
-
-
-
-//--------------------------------------------------------------------------------------
-//-- RESTful API -- Personalized training programs -- ##################################
-//--------------------------------------------------------------------------------------
 
 export async function createANewPersonalizedProgram(
     trainer_id, client_id, beginning_date, end_date, overall_objective, additional_information
@@ -348,8 +313,6 @@ export async function getSpecificPerosnalizedProgramData(personalized_program_id
     return queryResult[0]
 }
 
-//--------------------------------------------------------------------------------------
-
 export async function createANewCustomizedDay(
     personalized_program_id, notes
 ) {
@@ -384,14 +347,6 @@ export async function getSpecificCustomizedDayData(customized_day_id) {
 
     return queryResult[0]
 }
-//--------------------------------------------------------------------------------------
-//-- RESTful API -- Personalized training programs -- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-//--------------------------------------------------------------------------------------
-
-
-//--------------------------------------------------------------------------------------
-//-- RESTful API -- NOT SORTED IMPLEMENTATIONS -- ######################################
-//--------------------------------------------------------------------------------------
 
 export async function checkUserRole(insertedUsername) {
     const [queryResult] = await pool.query(
@@ -613,7 +568,3 @@ export async function createMealPlan(
 
     return queryResult
 }
-
-//--------------------------------------------------------------------------------------
-//-- RESTful API -- NOT SORTED IMPLEMENTATIONS -- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-//--------------------------------------------------------------------------------------
