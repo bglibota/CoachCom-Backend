@@ -568,3 +568,28 @@ export async function createMealPlan(
 
     return queryResult
 }
+
+export async function getPlanWeight() {
+
+    const [queryResult] = await pool.query(
+        `
+        SELECT plan_weight_id, plan_difficulty
+        FROM plan_weight
+        `
+    );
+
+    return queryResult
+}
+
+export async function getExerciseData(user_id) {
+    const [queryResult] = await pool.query(
+        `
+        SELECT *
+        FROM exercises
+        WHERE user_id = ?
+        `,
+        [user_id]
+    );
+
+    return queryResult
+}

@@ -32,7 +32,9 @@ import {
     updateTargetMeasurements,
     updateClientPersonalInformation,
     newPassword,
-    createMealPlan
+    createMealPlan,
+    getPlanWeight,
+    getExerciseData
 } from './db_V2.js';
 
 
@@ -1119,6 +1121,75 @@ app.post("/api/meal_plan/create", async (req, res) => {
         )
     }
 });
+
+app.get("/api/plan_weight", async (req, res) => {
+
+    try {
+
+        const plan_weight = await getPlanWeight()
+
+        res.status(200).json(
+            {
+                success: true,
+                message: "Successful retrieval of plan weight data",
+                data: plan_weight
+            }
+        )
+
+
+    } catch (error) {
+        res.status(500).json(
+            {
+                success: false,
+                message: "Error - /api/plan_weight - Error retrieving plan weight data",
+                data: [error]
+            }
+        )
+    }
+});
+
+
+app.get("/api/exercises", async (req, res) => {
+
+    try {
+
+        const { user_id } = req.query;
+
+        const exercises = await getExerciseData(user_id)
+
+        if(exercises && exercises.length > 0){
+
+            res.status(200).json(
+                {
+                    success: true,
+                    message: "Successful retrieval of exercise data",
+                    data: exercises
+                }
+            )
+        }else{
+
+            res.status(404).json(
+                {
+                    success: false,
+                    message: "Exercises don't exist!",
+                    data: []
+                }
+            )
+
+        }
+
+
+    } catch (error) {
+        res.status(500).json(
+            {
+                success: false,
+                message: "Error - /api/exercises - Error checking exercise data",
+                data: [error]
+            }
+        )
+    }
+});
+
 
 
 app.use((err, req, res, next) => {
