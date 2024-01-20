@@ -593,3 +593,57 @@ export async function getExerciseData(user_id) {
 
     return queryResult
 }
+
+export async function createWeightLossPlan(
+    user_id,
+    name,
+    description,
+    start_date,
+    end_date,
+    plan_weight_id 
+) {
+
+    const queryResult = await pool.query(
+        `
+        INSERT INTO weight_loss_plan 
+        (user_id, name, description, start_date, end_date, plan_weight_id)
+        VALUES 
+        (?, ?, ?, ?, ?, ?)
+        `,
+        [
+            user_id, 
+            name,
+            description,
+            start_date,
+            end_date,
+            plan_weight_id             
+        ]
+    );
+
+    const weight_loss_plan_id = queryResult[0]?.insertId;
+
+    return weight_loss_plan_id;
+}
+
+export async function createWeightLossPlanExercises(
+    weight_loss_plan_id,
+    exercises
+) {
+
+    for(const exercise_id of exercises){
+
+        const queryResult = await pool.query(
+            `
+            INSERT INTO weight_loss_plan_exercises 
+            (weight_loss_plan_id, exercise_id)
+            VALUES 
+            (?, ?)
+            `,
+            [
+                weight_loss_plan_id, 
+                exercise_id
+            ]
+        );
+    }
+
+}

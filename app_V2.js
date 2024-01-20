@@ -34,7 +34,9 @@ import {
     newPassword,
     createMealPlan,
     getPlanWeight,
-    getExerciseData
+    getExerciseData,
+    createWeightLossPlan,
+    createWeightLossPlanExercises
 } from './db_V2.js';
 
 
@@ -1184,6 +1186,80 @@ app.get("/api/exercises", async (req, res) => {
             {
                 success: false,
                 message: "Error - /api/exercises - Error checking exercise data",
+                data: [error]
+            }
+        )
+    }
+});
+
+app.post("/api/weight_loss_plan/create", async (req, res) => {
+
+    try {
+
+        const expectedJSONObjectElements = [
+            "user_id",
+            "name",
+            "description",
+            "start_date",
+            "end_date",
+            "plan_weight_id",
+            "exercises"
+        ];
+
+        const hasAllExpectedObjectElements = expectedJSONObjectElements.every(field => field in req.body);      
+
+        if (!hasAllExpectedObjectElements) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid request body. Missing or unexpected object elements!',
+                data: []
+            });
+        }
+
+        const {
+            user_id,
+            name,
+            description,
+            start_date,
+            end_date,
+            plan_weight_id,
+            exercises
+        } = req.body;
+
+        if(user_id == null || name == null || description == null || start_date == null || end_date == null || plan_weight_id == null || exercises.length == 0){
+
+            return res.status(409).json({
+                success: false,
+                message: 'Some fields are empty.',
+                data: []
+            });
+        }
+
+        const weight_loss_plan_id = await createWeightLossPlan(
+            user_id,
+            name,
+            description,
+            start_date,
+            end_date,
+            plan_weight_id
+        )
+
+        await createWeightLossPlanExercises(weight_loss_plan_id, exercises)
+
+        res.status(200).json(
+            {
+                success: true,
+                message: "New weight loss plan successfully added!",
+                data: []
+            }
+        )
+        
+
+    } catch (error) {
+        res.status(500).json(
+            {
+                success: false,
+                message: "Error - /api/weight_loss_plan/create - Error creating a new weight loss plan",
                 data: [error]
             }
         )
