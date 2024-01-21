@@ -32,20 +32,16 @@ import {
     updateTargetMeasurements,
     updateClientPersonalInformation,
     newPassword,
-    createMealPlan
+    createMealPlan,
+    getPlanWeight,
+    getExerciseData,
+    createWeightLossPlan,
+    createWeightLossPlanExercises
 } from './db_V2.js';
 
 
-//Defining for the app to use JSON (since this is a JSON API)
 app.use(express.json())
 
-
-
-
-
-//--------------------------------------------------------------------------------------
-//-- RESTful API -- Registration -- ####################################################
-//--------------------------------------------------------------------------------------
 
 app.post("/api/users/register/client", async (req, res) => {
 
@@ -66,8 +62,7 @@ app.post("/api/users/register/client", async (req, res) => {
             "video"
         ];
 
-        // Checks if all expected object elements are present in body of the request
-        const hasAllExpectedObjectElements = expectedJSONObjectElements.every(field => field in req.body);      //@IvanGiljević - Try to understand more clearely later...
+        const hasAllExpectedObjectElements = expectedJSONObjectElements.every(field => field in req.body); 
 
         if (!hasAllExpectedObjectElements) {
             return res.status(400).json({
@@ -92,7 +87,6 @@ app.post("/api/users/register/client", async (req, res) => {
             video
         } = req.body;
 
-        //##### - TO DO - Server side data filtering (against SQL I and XSS attacks) (@MMatijević?)
 
         if (!await checkIfUsernameIsAvailable(username)) {
             res.status(409).json(
@@ -104,7 +98,7 @@ app.post("/api/users/register/client", async (req, res) => {
             )
         } else {
 
-            const userSalt = crypto.randomBytes(16).toString('hex') //Generates hex data that is store in 16 bytess
+            const userSalt = crypto.randomBytes(16).toString('hex')
             const safePassword = crypto.createHash('sha256').update(password + userSalt).digest('hex');
 
             const newClient = await createANewClient(
@@ -166,8 +160,7 @@ app.post("/api/users/register/trainer", async (req, res) => {
             "video"
         ];
 
-        // Checks if all expected object elements are present in body of the request
-        const hasAllExpectedObjectElements = expectedJSONObjectElements.every(field => field in req.body);      //@IvanGiljević - Try to understand more clearely later...
+        const hasAllExpectedObjectElements = expectedJSONObjectElements.every(field => field in req.body);      
 
         if (!hasAllExpectedObjectElements) {
             return res.status(400).json({
@@ -193,7 +186,6 @@ app.post("/api/users/register/trainer", async (req, res) => {
             video
         } = req.body;
 
-        //##### - TO DO - Server side data filtering (against SQL I and XSS attacks) (@MMatijević?)
 
         if (!await checkIfUsernameIsAvailable(username)) {
             res.status(409).json(
@@ -205,7 +197,7 @@ app.post("/api/users/register/trainer", async (req, res) => {
             )
         } else {
 
-            const userSalt = crypto.randomBytes(16).toString('hex') //Generates hex data that is store in 16 bytess
+            const userSalt = crypto.randomBytes(16).toString('hex') 
             const safePassword = crypto.createHash('sha256').update(password + userSalt).digest('hex');
 
             const newTrainer = await createANewTrainer(
@@ -245,16 +237,7 @@ app.post("/api/users/register/trainer", async (req, res) => {
         )
     }
 });
-//--------------------------------------------------------------------------------------
-//-- RESTful API -- Registration -- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-//--------------------------------------------------------------------------------------
 
-
-
-
-//--------------------------------------------------------------------------------------
-//-- RESTful API -- Login -- ###########################################################
-//--------------------------------------------------------------------------------------
 
 app.post("/api/users/login", async (req, res) => {
 
@@ -265,8 +248,7 @@ app.post("/api/users/login", async (req, res) => {
             "insertedPassword"
         ];
 
-        // Checks if all expected object elements are present in body of the request
-        const hasAllExpectedObjectElements = expectedJSONObjectElements.every(field => field in req.body);      //@IvanGiljević - Try to understand more clearely later...
+        const hasAllExpectedObjectElements = expectedJSONObjectElements.every(field => field in req.body);      
 
         if (!hasAllExpectedObjectElements) {
             return res.status(400).json({
@@ -283,7 +265,7 @@ app.post("/api/users/login", async (req, res) => {
 
         const searchedUser = await checkUsernameForLogin(insertedUsername)
 
-        if (searchedUser[0] == null) {       //queryResult[0]
+        if (searchedUser[0] == null) {     
             res.status(404).json(
                 {
                     success: false,
@@ -296,7 +278,6 @@ app.post("/api/users/login", async (req, res) => {
             const hashUserSaltedInsertedPassword = crypto.createHash('sha256').update(insertedPassword + searchedUser[0].salt).digest('hex')
 
             if (searchedUser[0].password != hashUserSaltedInsertedPassword) {
-                //######### TO DO - Increment number_of_login_attempts
                 res.status(401).json(
                     {
                         success: false,
@@ -305,7 +286,6 @@ app.post("/api/users/login", async (req, res) => {
                     }
                 )
             } else {
-                //######### TO DO - set number_of_login_attempts to 0 AND set last_login_time
                 const userRole = await checkUserRole(insertedUsername)
                 const user_id = searchedUser[0].user_id
                 const roleName = userRole[0].name
@@ -316,7 +296,7 @@ app.post("/api/users/login", async (req, res) => {
                         data: {
                             user_id: user_id,
                             role: roleName
-                        }                      //MYB send JWT token in future ?@MMatijević?
+                        }                     
                     }
                 )
             }
@@ -332,18 +312,6 @@ app.post("/api/users/login", async (req, res) => {
         )
     }
 });
-
-
-
-//--------------------------------------------------------------------------------------
-//-- RESTful API -- Login -- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-//--------------------------------------------------------------------------------------
-
-
-
-//--------------------------------------------------------------------------------------
-//-- RESTful API -- Exercises -- ####################################################
-//--------------------------------------------------------------------------------------
 
 
 
@@ -363,8 +331,7 @@ app.post("/api/exercises/create", async (req, res) => {
             "secondary_muscle_group"
         ];
 
-        // Checks if all expected object elements are present in body of the request
-        const hasAllExpectedObjectElements = expectedJSONObjectElements.every(field => field in req.body);      //@IvanGiljević - Try to understand more clearely later...
+        const hasAllExpectedObjectElements = expectedJSONObjectElements.every(field => field in req.body);     
 
         if (!hasAllExpectedObjectElements) {
             return res.status(400).json({
@@ -386,7 +353,6 @@ app.post("/api/exercises/create", async (req, res) => {
             secondary_muscle_group
         } = req.body;
 
-        //##### - TO DO - Server side data filtering (against SQL I and XSS attacks) (@MMatijević?)
 
         if (!await checkIfExerciseExists(name)) {
             res.status(409).json(
@@ -463,7 +429,6 @@ app.put("/api/exercises/update", async (req, res) => {
     try {
         const { exercise_id } = req.query;
 
-        // Ensure exercise_id is provided
         if (!exercise_id) {
             return res.status(400).json({
                 success: false,
@@ -472,7 +437,6 @@ app.put("/api/exercises/update", async (req, res) => {
             });
         }
 
-        // Check if the exercise exists
         const existingExercise = await getSpecificExerciseData(exercise_id);
         if (!existingExercise) {
             return res.status(404).json({
@@ -494,8 +458,7 @@ app.put("/api/exercises/update", async (req, res) => {
             "secondary_muscle_group"
         ];
 
-        // Checks if all expected object elements are present in body of the request
-        const hasAllExpectedObjectElements = expectedJSONObjectElements.every(field => field in req.body);      //@IvanGiljević - Try to understand more clearely later...
+        const hasAllExpectedObjectElements = expectedJSONObjectElements.every(field => field in req.body);    
 
         if (!hasAllExpectedObjectElements) {
             return res.status(400).json({
@@ -505,7 +468,6 @@ app.put("/api/exercises/update", async (req, res) => {
             });
         }
 
-        //This is useless? - the object is being constructed but not used 
         const {
             user_id,
             name,
@@ -519,7 +481,6 @@ app.put("/api/exercises/update", async (req, res) => {
         } = req.body;
 
 
-        // Update exercise data
         const updatedExercise = await updateExercise(exercise_id, req.body);
 
         res.status(200).json({
@@ -542,7 +503,6 @@ app.delete("/api/exercises/delete", async (req, res) => {
     try {
         const { exercise_id } = req.query;
 
-        // Ensure exercise_id is provided
         if (!exercise_id) {
             return res.status(400).json({
                 success: false,
@@ -551,7 +511,6 @@ app.delete("/api/exercises/delete", async (req, res) => {
             });
         }
 
-        // Check if the exercise exists
         const existingExercise = await getSpecificExerciseData(exercise_id);
         if (!existingExercise) {
             return res.status(404).json({
@@ -561,8 +520,6 @@ app.delete("/api/exercises/delete", async (req, res) => {
             });
         }
 
-        // Delete exercise
-        //await deleteExercise(exercise_id);
         const queryResult = await deleteExercise(exercise_id)
         res.status(200).json({
             success: true,
@@ -581,17 +538,6 @@ app.delete("/api/exercises/delete", async (req, res) => {
 
 
 
-
-//--------------------------------------------------------------------------------------
-//-- RESTful API -- Exercises -- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-//--------------------------------------------------------------------------------------
-
-
-
-//--------------------------------------------------------------------------------------
-//-- RESTful API -- Personalized training programs -- ##################################
-//--------------------------------------------------------------------------------------
-
 app.post("/api/personalized_program", async (req, res) => {
 
     try {
@@ -605,7 +551,6 @@ app.post("/api/personalized_program", async (req, res) => {
             "additional_information"
         ];
 
-        // Checks if all expected object elements are present in body of the request
         const hasAllExpectedObjectElements = expectedJSONObjectElements.every(field => field in req.body);
 
         if (!hasAllExpectedObjectElements) {
@@ -661,7 +606,7 @@ app.get("/api/personalized_program", async (req, res) => {
 
         const personalizedProgramData = await getSpecificPerosnalizedProgramData(personalized_program_id)
 
-        if (personalizedProgramData == null) //personalized program wih the given id doesn't exists on DB
+        if (personalizedProgramData == null) 
         {
             res.status(404).json(
                 {
@@ -692,7 +637,6 @@ app.get("/api/personalized_program", async (req, res) => {
     }
 });
 
-//-------------------------------------------------------------------------------------
 
 app.post("/api/customized_days", async (req, res) => {
     try {
@@ -702,7 +646,6 @@ app.post("/api/customized_days", async (req, res) => {
             "notes"
         ];
 
-        // Checks if all expected object elements are present in body of the request
         const hasAllExpectedObjectElements = expectedJSONObjectElements.every(field => field in req.body);
 
         if (!hasAllExpectedObjectElements) {
@@ -712,8 +655,6 @@ app.post("/api/customized_days", async (req, res) => {
                 data: []
             });
         }
-
-        //###TO DO - Check if given personalized_programs_id exists
 
         const {
             personalized_program_id,
@@ -753,7 +694,7 @@ app.get("/api/customized_days", async (req, res) => {
 
         const customizedDayData = await getSpecificCustomizedDayData(customized_day_id)
 
-        if (customizedDayData == null) //personalized program wih the given id doesn't exists on DB
+        if (customizedDayData == null) 
         {
             res.status(404).json(
                 {
@@ -784,17 +725,7 @@ app.get("/api/customized_days", async (req, res) => {
     }
 });
 
-//--------------------------------------------------------------------------------------
-//-- RESTful API -- Personalized training programs -- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-//--------------------------------------------------------------------------------------
 
-
-
-//--------------------------------------------------------------------------------------
-//-- RESTful API -- NOT SORTED IMPLEMENTATIONS -- ######################################
-//--------------------------------------------------------------------------------------
-
-//Implemented by R.Gladoic
 app.get("/api/users/user", async (req, res) => {
 
     try {
@@ -823,7 +754,6 @@ app.get("/api/users/user", async (req, res) => {
     }
 });
 
-//Implemented by R.Gladoic
 app.get("/api/users/user/measurements", async (req, res) => {
 
     try {
@@ -1194,16 +1124,150 @@ app.post("/api/meal_plan/create", async (req, res) => {
     }
 });
 
-//--------------------------------------------------------------------------------------
-//-- RESTful API -- NOT SORTED IMPLEMENTATIONS -- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-//--------------------------------------------------------------------------------------
+app.get("/api/plan_weight", async (req, res) => {
+
+    try {
+
+        const plan_weight = await getPlanWeight()
+
+        res.status(200).json(
+            {
+                success: true,
+                message: "Successful retrieval of plan weight data",
+                data: plan_weight
+            }
+        )
 
 
-//--------------------------------------------------------------------------------------
-//-- RESTful API -- Error handling and server listening -- #############################
-//--------------------------------------------------------------------------------------
+    } catch (error) {
+        res.status(500).json(
+            {
+                success: false,
+                message: "Error - /api/plan_weight - Error retrieving plan weight data",
+                data: [error]
+            }
+        )
+    }
+});
 
-//Error handling...
+
+app.get("/api/exercises", async (req, res) => {
+
+    try {
+
+        const { user_id } = req.query;
+
+        const exercises = await getExerciseData(user_id)
+
+        if(exercises && exercises.length > 0){
+
+            res.status(200).json(
+                {
+                    success: true,
+                    message: "Successful retrieval of exercise data",
+                    data: exercises
+                }
+            )
+        }else{
+
+            res.status(404).json(
+                {
+                    success: false,
+                    message: "Exercises don't exist!",
+                    data: []
+                }
+            )
+
+        }
+
+
+    } catch (error) {
+        res.status(500).json(
+            {
+                success: false,
+                message: "Error - /api/exercises - Error checking exercise data",
+                data: [error]
+            }
+        )
+    }
+});
+
+app.post("/api/weight_loss_plan/create", async (req, res) => {
+
+    try {
+
+        const expectedJSONObjectElements = [
+            "user_id",
+            "name",
+            "description",
+            "start_date",
+            "end_date",
+            "plan_weight_id",
+            "exercises"
+        ];
+
+        const hasAllExpectedObjectElements = expectedJSONObjectElements.every(field => field in req.body);      
+
+        if (!hasAllExpectedObjectElements) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid request body. Missing or unexpected object elements!',
+                data: []
+            });
+        }
+
+        const {
+            user_id,
+            name,
+            description,
+            start_date,
+            end_date,
+            plan_weight_id,
+            exercises
+        } = req.body;
+
+        if(user_id == null || name === '' || description === '' || start_date === '' || end_date === '' || plan_weight_id == null || exercises.length == 0){
+
+            return res.status(409).json({
+                success: false,
+                message: 'Some fields are empty.',
+                data: []
+            });
+        }
+
+        const weight_loss_plan_id = await createWeightLossPlan(
+            user_id,
+            name,
+            description,
+            start_date,
+            end_date,
+            plan_weight_id
+        )
+
+        await createWeightLossPlanExercises(weight_loss_plan_id, exercises)
+
+        res.status(200).json(
+            {
+                success: true,
+                message: "New weight loss plan successfully added!",
+                data: []
+            }
+        )
+        
+
+    } catch (error) {
+        res.status(500).json(
+            {
+                success: false,
+                message: "Error - /api/weight_loss_plan/create - Error creating a new weight loss plan",
+                data: [error]
+            }
+        )
+    }
+});
+
+
+
 app.use((err, req, res, next) => {
     console.error(err.stack)
     res.status(500).send('Error - Something broke!')
@@ -1214,17 +1278,3 @@ const port = process.env.PORT || 3000;
 app.listen(port, () => {
     console.log(`Server is running and listening on port ${port} ...`)
 });
-
-//--------------------------------------------------------------------------------------
-//-- RESTful API -- Error handling and server listening -- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-//--------------------------------------------------------------------------------------
-
-
-
-//--------------------------------------------------------------------------------------
-//-- RESTful API -- Implementation part -- #############################################
-//--------------------------------------------------------------------------------------
-
-//--------------------------------------------------------------------------------------
-//-- RESTful API -- Implementation part -- ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-//--------------------------------------------------------------------------------------
