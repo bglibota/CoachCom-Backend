@@ -1226,7 +1226,7 @@ app.post("/api/weight_loss_plan/create", async (req, res) => {
             exercises
         } = req.body;
 
-        if(user_id == null || name == null || description == null || start_date == null || end_date == null || plan_weight_id == null || exercises.length == 0){
+        if(user_id == null || name === '' || description === '' || start_date === '' || end_date === '' || plan_weight_id == null || exercises.length == 0){
 
             return res.status(409).json({
                 success: false,
