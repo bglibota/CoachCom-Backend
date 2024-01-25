@@ -820,6 +820,16 @@ app.post("/api/users/user/measurements/physical/create", async (req, res) => {
             hip_circumference
         } = req.body;
 
+
+        if(user_id == null || weight === '' || waist_circumference === '' || chest_circumference === '' || arm_circumference === '' || leg_circumference === '' || hip_circumference === ''){
+
+            return res.status(409).json({
+                success: false,
+                message: 'Some fields are empty.',
+                data: []
+            });
+        }
+
         await createPhysicalMeasurements(
             user_id,
             weight,
@@ -885,6 +895,15 @@ app.put("/api/users/user/measurements/target/update", async (req, res) => {
             target_leg_circumference,
             target_hip_circumference
         } = req.body;
+
+        if(user_id == null || height === '' || target_weight === '' || target_waist_circumference === '' || target_chest_circumference === '' || target_arm_circumference === '' || target_leg_circumference === '' || target_hip_circumference === ''){
+
+            return res.status(409).json({
+                success: false,
+                message: 'Some fields are empty.',
+                data: []
+            });
+        }
 
         await updateTargetMeasurements(
             user_id,
