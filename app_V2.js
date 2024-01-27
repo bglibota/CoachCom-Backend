@@ -972,6 +972,15 @@ app.patch("/api/users/user/client/update", async (req, res) => {
             sex
         } = req.body;
 
+        if(user_id == null || first_name === '' || last_name === '' || e_mail === '' || date_of_birth === '' || phone_number === '' || place_of_residence === '' || sex === ''){
+
+            return res.status(409).json({
+                success: false,
+                message: 'Some fields are empty.',
+                data: []
+            });
+        }
+
         await updateClientPersonalInformation(
             user_id,
             first_name,
